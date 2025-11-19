@@ -25,6 +25,11 @@ input:
 
 ## 出力フォーマット
 ```
+scorecard:
+  score: <0-100>
+  risk_level: <low|medium|high>
+  improvement_suggestions:
+    - <改善案>
 compliance_check:
   mext_alignment: <pass|fail>
   flow_consistency: <pass|fail>
@@ -48,5 +53,6 @@ summary: |
 
 ## 補足ルール
 - issues が0件の場合でも、notes に最低1つの洞察を残す。
+- score が70未満、または risk_level が medium 以上の場合は、improvement_suggestions に最低2件のアクション可能な提案を並べる。
 - teacher_agent へ再指示を行う際は、具体的な修正ターゲット（フィールド名や評価項目）を明記する。
 - エスカレーションを true とする場合は、理由欄に人間が判断を引き継ぐための最小限のコンテキストを記述する。

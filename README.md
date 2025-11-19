@@ -42,11 +42,17 @@ ai-role-education/
 > 現在の `main` ブランチには上記のファイルがすべて含まれています。ローカルで見当たらない場合は `git fetch` と `git checkout main`、
 > もしくは `git pull` を実行して最新状態に同期してください。
 
+## フロー設定のポイント
+
+- `flow/education_flow_v1.yaml` では `loop_rules` に **max_revision_loops / approve_threshold / max_loops_behavior** を集約し、どの concept_id でも一貫した監査基準を適用できるようになりました。
+- 各ステージの `inputs` / `outputs` は `{concepts_root}/{concept_id}/concept_v{n}.yaml` のようなテンプレート表現で定義されており、新しいコンセプトを追加する際は `concept_id` とバージョンカウンタを差し替えるだけで運用できます。
+- `review_output` もテンプレ化されているため、スクリプトや外部オーケストレーターはステージ情報から自動的にパスを解決できます。
+
 ## はじめに
 
 1. `roles/` にある**各種プロンプト**を確認します。各AIロール向けのそのまま使える指示テンプレートです。
 2. **教育フロー**（`flow/education_flow_v1.md`）を読み、teacher → mext → license の連携手順を理解します。
-3. `concepts/docdd/` の **DocDDサンプルコンセプト** を参照し、コンセプト／レビュー／ライセンスの期待YAML構造を把握します。
+3. `concepts/docdd/` の **DocDDサンプルコンセプト** を参照し、コンセプト／レビュー／ライセンスの期待YAML構造を把握します。テンプレート表現を使う場合は `concept_id=docdd`、`n=1` を当てはめてください。
 4. **ヘルパースクリプト**を使って現在の状態をプレビューします（`PyYAML` が必要）：
 
    ```bash
@@ -66,9 +72,9 @@ ai-role-education/
 
 ### 新しい `concept_id` を追加する
 
-1. **準備**: `roles/` の3つのロールプロンプトと、`flow/education_flow_v1.md` の正準フロー説明を読み、必要なYAML構造とレビュー手順を理解します。
+1. **準備**: `roles/` の3つのロールプロンプトと、`flow/education_flow_v1.md` の正準フロー説明を読み、必要なYAML構造とレビュー手順を理解します。`loop_rules` を確認し、プロジェクト固有で変更すべき制約があれば差分として記録します。
 2. **コンセプトを起草（teacher_agent）**: `concepts/<concept_id>/` を作成し、DocDDテンプレートを参考に `concept_v1.yaml` を新しいプラクティスで埋めます。
-3. **コンセプトを監査（mext_agent）**: 下書きを8つの評価軸で審査し、`mext_review_v1.yaml` を作成して承認・要修正・却下を判断します。承認されない場合は、コメントが解決されるまでteacherと反復します。
+3. **コンセプトを監査（mext_agent）**: 下書きを8つの評価軸で審査し、`{concepts_root}/{concept_id}/mext_review_v{n}.yaml` を作成して承認・要修正・却下を判断します。承認されない場合は、コメントが解決されるまでteacherと反復します。
 4. **ライセンスを発行（license_agent）**: 承認後、同じコンセプト用の `license_v1.yaml` を作成し、対象領域・スコアリングルール・有効期間・執行条件を定義します。
 
 ### 既存の `concept_id` を更新する
