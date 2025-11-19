@@ -21,17 +21,26 @@ ai-role-education/
 │     ├─ concept_v1.yaml
 │     ├─ mext_review_v1.yaml
 │     └─ license_v1.yaml
+├─ flow/
+│  ├─ education_flow_v1.md  # フロー解説（文章）
+│  └─ education_flow_v1.yaml  # 実行用の構造化定義
+├─ personas/
+│  └─ schema.yaml
 ├─ roles/
 │  ├─ teacher_agent_prompt.md
 │  ├─ mext_agent_prompt.md
-│  └─ license_agent_prompt.md
-├─ flow/
-│  └─ education_flow_v1.md
+│  ├─ license_agent_prompt.md
+│  ├─ judge_agent_prompt.md
+│  └─ meta_mext_agent_prompt.md
 ├─ scripts/
 │  └─ run_flow.py
 └─ logs/
    └─ education_sessions.md (任意の手動ログ)
 ```
+
+> ℹ️ 以前のバージョンでは `flow/education_flow_v1.yaml` や追加のロールプロンプトが欠けているという報告がありましたが、
+> 現在の `main` ブランチには上記のファイルがすべて含まれています。ローカルで見当たらない場合は `git fetch` と `git checkout main`、
+> もしくは `git pull` を実行して最新状態に同期してください。
 
 ## はじめに
 
