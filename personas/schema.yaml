@@ -30,10 +30,10 @@ properties:
     description: "不確実性をどれだけ許容できるか"
   decision_style:
     type: string
-    description: "意思決定プロセス（例: data-driven, consensus, top-down）"
+    description: "意思決定プロセス（例: data-driven, consensus, top-down, 合議制, ワンマン, 現場丸投げ など）"
   communication_style:
     type: string
-    description: "好まれるコミュニケーション方法（例: async-detailed, sync-brief）"
+    description: "好まれるコミュニケーション方法（例: async-detailed, sync-brief, ロジカルで淡々, 感情重視で共感優先, テンション高めのハイコンテクスト など）"
   success_criteria:
     type: array
     items:

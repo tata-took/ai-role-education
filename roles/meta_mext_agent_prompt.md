@@ -31,6 +31,12 @@ input:
 
 ## 出力フォーマット
 ```
+meta_assessment:
+  strictness: <1-10>
+  consistency: <1-10>
+  flags: <OK|needs_revision>
+  required_changes:
+    - <制度として必須の修正点>
 assessment:
   rule_validity: <robust|acceptable|fragile>
   reasoning: |
@@ -58,3 +64,4 @@ summary: |
 - 16点ルールが過度に保守的で、承認率が一定水準(例:30%)を大きく下回っている場合は fragile 判定を優先する。
 - 評価軸を改定する際は、teacher_agent が実務で利用できるよう具体的な改善ポイントを列挙する。
 - フロー硬直を検出したら、ループ数や承認しきい値の変更を含めた制度改修案を簡潔に示す。
+- strictness と consistency は整数で評価し、flags が needs_revision の場合は required_changes に最低2件の改善事項を列挙する。
