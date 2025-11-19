@@ -1,0 +1,39 @@
+items:
+  - id: 1
+    name: "概念定義の明確さ"
+    score: 2
+    comment: "二層構造やBot連携まで定義され、目的と差別化ポイントが明確。"
+  - id: 2
+    name: "適用場面の具体性"
+    score: 2
+    comment: "規制・分散開発など条件が揃っており、判断しやすい。"
+  - id: 3
+    name: "判断軸の整理"
+    score: 2
+    comment: "五軸が互いに補完し、例外ルールなどv3での強みを測れる。"
+  - id: 4
+    name: "使用者ロールの明確さ"
+    score: 2
+    comment: "SREを追加し、技術と統制の橋渡しが分かる。"
+  - id: 5
+    name: "アンチパターンの列挙"
+    score: 2
+    comment: "Bot形骸化や責任境界など運用崩れを具体的に示している。"
+  - id: 6
+    name: "評価方法の網羅性"
+    score: 2
+    comment: "定性イベントと5つの定量指標で同期・例外・自動化を測定できる。"
+  - id: 7
+    name: "成功/失敗事例のバランス"
+    score: 2
+    comment: "成果と失敗の要因が対比され、導入時の注意点が伝わる。"
+  - id: 8
+    name: "類似コンセプトとの相性"
+    score: 2
+    comment: "Observabilityとの接続やPoC段階での折衷が補足されている。"
+total_score: 16
+decision: "approved"
+summary_comment: |
+  DocDD v3は統制とスピードの両立シナリオを描けており即承認。教材化に際しては、
+  二層ドキュメントを実装するテンプレート例やBotワークフローの疑似コードを別紙にすると、
+  受講者がさらに再現しやすくなる。

@@ -1,0 +1,43 @@
+license_id: "docdd_license_v4"
+concept_id: "docdd"
+version: 4
+domain:
+  name: "software_delivery_governance"
+  subdomains:
+    - "requirements_management"
+    - "change_advisory_board"
+    - "regulated_cloud_operations"
+    - "distributed_team_collaboration"
+    - "security_incident_response"
+initial_score: 65
+validity:
+  type: "time_based"
+  review_cycle_days: 120
+scoring_rules:
+  positive:
+    - "マスター/運用ノートのテンプレート必須セクションを埋め、差分説明を記録する"
+    - "DocDD BotをCIに組み込み、未整合時はPipelineをFailさせる。バイパス時は例外宣言を必須とする"
+    - "例外運用の開始・期限・復帰条件を記録し、期限内に通常DocDDへ戻ったことをログ化する"
+    - "意思決定ログにSLO/インシデント/リスク指標など観測データを引用する"
+    - "リリースノートにDocDDリンク（マスターと運用ノートの両方）を必須フィールドとして保存する"
+    - "月次DocDD健全性レビューでメトリクスと例外ログを共有し、改善アクションを設定する"
+  negative:
+    - "テンプレート必須セクションが空のまま承認する"
+    - "DocDD Botの警告を無視し、CIを手動で通過させる"
+    - "例外運用を宣言せずDocDDをバイパスし、復帰条件を記録しない"
+    - "観測データを引用せず、判断理由がチャットや口頭だけに留まる"
+    - "リリースノートやPRにDocDDリンクを付けず、トレーサビリティを切断する"
+    - "月次/四半期レビューを省略し、メトリクス低下を放置する"
+suspension_conditions:
+  - "DocDD同期遅延中央値が45日を超える状態が2回連続で確認された場合"
+  - "例外復帰遵守率が60%未満で、是正計画が提示されない場合"
+  - "Bot阻止件数が0のまま未整合リリースが発生し、是正策が実行されない場合"
+  - "テンプレート充填率が70%未満で、改善が見られない場合"
+revocation_conditions:
+  - "承認履歴や例外ログの改ざんが監査で認定された場合"
+  - "DocDD未実施が原因の重大インシデントやコンプライアンス違反が複数回発生した場合"
+  - "サスペンド後60日以内にメトリクス改善を示せず、リリースの統制が回復しない場合"
+notes: |
+  v4ライセンスではテンプレートとBotのセット運用を必須化する。委託先・ベンダーにもDocDDリンク提出と
+  例外宣言プロセスを契約条件として求めることで、トレーサビリティの一貫性を担保する。
+  四半期ごとにテンプレートとBotチェックリストを最新組織構造・規制要件に合わせて更新すること。
