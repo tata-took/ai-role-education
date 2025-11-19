@@ -35,8 +35,6 @@ ai-role-education/
    └─ education_sessions.md (optional manual logs)
 ```
 
-Add more Concept folders (for example `concepts/tdd/`) as you scale the system.
-
 ## Getting started
 
 1. **Review the prompts** under `roles/`. They are ready-to-use instruction
@@ -53,6 +51,48 @@ Add more Concept folders (for example `concepts/tdd/`) as you scale the system.
 
    The script prints a concise summary and validates that mandatory fields are
    present before you run the agents.
+
+## Current Concept inventory
+
+- **DocDD (Document Driven Development)** — `concepts/docdd/`
+  - `concept_v1.yaml` defines the practice of documenting requirements first so
+    every stakeholder shares the same references before implementation begins.
+  - `mext_review_v1.yaml` records a total score of 14/16 with an **approved**
+    decision; it also requests richer anti-pattern mitigations and deeper root
+    causes for the failure case in a future revision.
+  - `license_v1.yaml` introduces the DocDD license for software development
+    teams, starting at 50 points, reviewed every 90 days, and governed by
+    detailed scoring, suspension, and revocation rules.
+
+## Operating the education flow
+
+### Adding a new `concept_id`
+
+1. **Prepare**: read the three role prompts in `roles/` and the canonical flow
+   description in `flow/education_flow_v1.md` so you understand the required
+   YAML structure and review loop.
+2. **Draft the Concept (teacher_agent)**: create `concepts/<concept_id>/` and
+   author `concept_v1.yaml`, mirroring the DocDD template to fill every section
+   with the new practice.
+3. **Audit the Concept (mext_agent)**: evaluate the draft against the eight
+   scoring axes, write `mext_review_v1.yaml`, and set the decision to approved,
+   needs_revision, or rejected. If it is not approved, iterate with the teacher
+   until the comments are addressed.
+4. **Issue the License (license_agent)**: once approved, produce
+   `license_v1.yaml` for the same concept, covering domain, scoring rules,
+   validity period, and enforcement conditions.
+
+### Updating an existing `concept_id`
+
+1. **Review the latest files** (`concept_vN.yaml`, `mext_review_vN.yaml`, and
+   `license_vN.yaml`) to understand past critiques and licensing constraints.
+2. **Draft a revision** (`concept_vN+1.yaml`) that addresses review feedback and
+   any newly discovered operational lessons.
+3. **Re-run the audit** by creating `mext_review_vN+1.yaml`; loop with the
+   teacher stage up to a few times until the decision becomes **approved**.
+4. **Update the license** (`license_vN+1.yaml`) only if the Concept changes
+   alter its certification requirements, then re-run any scripts or manual
+   checks before committing.
 
 ## Extending the system
 
