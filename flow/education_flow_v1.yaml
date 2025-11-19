@@ -1,0 +1,39 @@
+flow_name: "education_flow"
+version: "1.0"
+max_revision_loops: 3
+approve_threshold: 12
+concepts_root: "concepts"
+review_output: "mext_review_v{n}.yaml"
+stages:
+  - id: teacher
+    description: "Conceptドラフトを生成する初期ステージ"
+    role_prompt: "roles/teacher_agent_prompt.md"
+    inputs:
+      - "concepts/docdd/concept_v1.yaml"
+    outputs:
+      - "concepts/docdd/concept_v{n}.yaml"
+    handoff: "mext"
+  - id: mext
+    description: "概念の品質を8項目で審査し、承認または差し戻しを行う"
+    role_prompt: "roles/mext_agent_prompt.md"
+    inputs:
+      - "concepts/docdd/concept_v{n}.yaml"
+    outputs:
+      - "concepts/docdd/mext_review_v{n}.yaml"
+    handoff: "license"
+  - id: license
+    description: "承認済みConceptをもとに免許定義を作成する"
+    role_prompt: "roles/license_agent_prompt.md"
+    inputs:
+      - "concepts/docdd/concept_v{n}.yaml"
+      - "concepts/docdd/mext_review_v{n}.yaml"
+    outputs:
+      - "concepts/docdd/license_v{n}.yaml"
+    handoff: null
+revision_policy:
+  loop_condition: "mext stage decision が approved になるまで teacher↔mext を繰り返す"
+  max_loops_behavior: "3ループ超過時は judge_agent にエスカレーションし、人間レビューを要求する"
+versioning_rules:
+  - "Concept, Review, License はそれぞれ v{n} を付与し、同じループ内の成果物は同じ n を共有する"
+  - "review_output の {n} は mext の審査回数に連動し、承認されるまで連番で増加する"
+  - "重大なフロー変更時は version をメジャーアップデートし、軽微な修正はマイナー/パッチで表現する"
