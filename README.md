@@ -1,19 +1,17 @@
 # ai-role-education
 
-This repository contains the first version of an **AI role education system**.
-It simulates a vocational school + education ministry + licensing office flow
-for teaching AI agents actionable work concepts and certifying them through a
-repeatable, auditable process.
+このリポジトリには、**AIロール教育システム**の最初のバージョンが含まれています。
+職業訓練校 + 教育省 + 免許事務所の流れをシミュレートし、AIエージェントに
+実践的な業務コンセプトを教え、再現性があり監査可能なプロセスで認証します。
 
-The scope of `v1` focuses on three roles:
+`v1` の範囲では次の3つのロールにフォーカスしています。
 
-- **teacher_agent** — drafts a Concept by following a strict YAML template.
-- **mext_agent** — reviews a Concept using eight scoring axes and decides whether
-  it should be approved, revised, or rejected.
-- **license_agent** — designs a License definition for each approved Concept so
-  other AI roles can be granted a measurable credential.
+- **teacher_agent** — 厳格なYAMLテンプレートに沿ってコンセプトを起草します。
+- **mext_agent** — 8つの評価軸でコンセプトを査読し、承認・再提出・却下を判断します。
+- **license_agent** — 承認済みコンセプトごとにライセンス定義を設計し、他のAIロールに
+  測定可能な資格を付与できるようにします。
 
-## Repository structure
+## リポジトリ構成
 
 ```
 ai-role-education/
@@ -32,78 +30,52 @@ ai-role-education/
 ├─ scripts/
 │  └─ run_flow.py
 └─ logs/
-   └─ education_sessions.md (optional manual logs)
+   └─ education_sessions.md (任意の手動ログ)
 ```
 
-## Getting started
+## はじめに
 
-1. **Review the prompts** under `roles/`. They are ready-to-use instruction
-   templates for each AI role.
-2. **Read the education flow** (`flow/education_flow_v1.md`) to understand how
-   the teacher → mext → license loop is orchestrated.
-3. **Inspect the sample DocDD Concept** in `concepts/docdd/` to see the expected
-   YAML shape for Concepts, review logs, and licenses.
-4. **Use the helper script** to preview the current state (requires `PyYAML`):
+1. `roles/` にある**各種プロンプト**を確認します。各AIロール向けのそのまま使える指示テンプレートです。
+2. **教育フロー**（`flow/education_flow_v1.md`）を読み、teacher → mext → license の連携手順を理解します。
+3. `concepts/docdd/` の **DocDDサンプルコンセプト** を参照し、コンセプト／レビュー／ライセンスの期待YAML構造を把握します。
+4. **ヘルパースクリプト**を使って現在の状態をプレビューします（`PyYAML` が必要）：
 
    ```bash
    python scripts/run_flow.py --concept concepts/docdd/concept_v1.yaml --license concepts/docdd/license_v1.yaml
    ```
 
-   The script prints a concise summary and validates that mandatory fields are
-   present before you run the agents.
+   スクリプトは要約を表示し、エージェントを実行する前に必須フィールドが揃っているか検証します。
 
-## Current Concept inventory
+## 現在のコンセプト一覧
 
-- **DocDD (Document Driven Development)** — `concepts/docdd/`
-  - `concept_v1.yaml` defines the practice of documenting requirements first so
-    every stakeholder shares the same references before implementation begins.
-  - `mext_review_v1.yaml` records a total score of 14/16 with an **approved**
-    decision; it also requests richer anti-pattern mitigations and deeper root
-    causes for the failure case in a future revision.
-  - `license_v1.yaml` introduces the DocDD license for software development
-    teams, starting at 50 points, reviewed every 90 days, and governed by
-    detailed scoring, suspension, and revocation rules.
+- **DocDD（Document Driven Development）** — `concepts/docdd/`
+  - `concept_v1.yaml`: 実装開始前に要件を文書化し、関係者が同じ参照情報を共有するプラクティスを定義しています。
+  - `mext_review_v1.yaml`: 合計スコア14/16で**承認**、次版ではアンチパターン対策と失敗ケースの根本原因をより詳しく求めています。
+  - `license_v1.yaml`: DocDDライセンスを定義し、ソフトウェア開発チーム向けに50ポイント開始・90日ごとのレビュー・詳細な評価/停止/失効ルールを示します。
 
-## Operating the education flow
+## 教育フローの運用
 
-### Adding a new `concept_id`
+### 新しい `concept_id` を追加する
 
-1. **Prepare**: read the three role prompts in `roles/` and the canonical flow
-   description in `flow/education_flow_v1.md` so you understand the required
-   YAML structure and review loop.
-2. **Draft the Concept (teacher_agent)**: create `concepts/<concept_id>/` and
-   author `concept_v1.yaml`, mirroring the DocDD template to fill every section
-   with the new practice.
-3. **Audit the Concept (mext_agent)**: evaluate the draft against the eight
-   scoring axes, write `mext_review_v1.yaml`, and set the decision to approved,
-   needs_revision, or rejected. If it is not approved, iterate with the teacher
-   until the comments are addressed.
-4. **Issue the License (license_agent)**: once approved, produce
-   `license_v1.yaml` for the same concept, covering domain, scoring rules,
-   validity period, and enforcement conditions.
+1. **準備**: `roles/` の3つのロールプロンプトと、`flow/education_flow_v1.md` の正準フロー説明を読み、必要なYAML構造とレビュー手順を理解します。
+2. **コンセプトを起草（teacher_agent）**: `concepts/<concept_id>/` を作成し、DocDDテンプレートを参考に `concept_v1.yaml` を新しいプラクティスで埋めます。
+3. **コンセプトを監査（mext_agent）**: 下書きを8つの評価軸で審査し、`mext_review_v1.yaml` を作成して承認・要修正・却下を判断します。承認されない場合は、コメントが解決されるまでteacherと反復します。
+4. **ライセンスを発行（license_agent）**: 承認後、同じコンセプト用の `license_v1.yaml` を作成し、対象領域・スコアリングルール・有効期間・執行条件を定義します。
 
-### Updating an existing `concept_id`
+### 既存の `concept_id` を更新する
 
-1. **Review the latest files** (`concept_vN.yaml`, `mext_review_vN.yaml`, and
-   `license_vN.yaml`) to understand past critiques and licensing constraints.
-2. **Draft a revision** (`concept_vN+1.yaml`) that addresses review feedback and
-   any newly discovered operational lessons.
-3. **Re-run the audit** by creating `mext_review_vN+1.yaml`; loop with the
-   teacher stage up to a few times until the decision becomes **approved**.
-4. **Update the license** (`license_vN+1.yaml`) only if the Concept changes
-   alter its certification requirements, then re-run any scripts or manual
-   checks before committing.
+1. **最新ファイルを確認**（`concept_vN.yaml`、`mext_review_vN.yaml`、`license_vN.yaml`）し、これまでの指摘とライセンス制約を把握します。
+2. **改訂案を作成**（`concept_vN+1.yaml`）し、レビューでの指摘や新たに得た運用知見を反映します。
+3. **再監査**: `mext_review_vN+1.yaml` を作成し、teacherフェーズと数回ループして最終的に**承認**されるまで繰り返します。
+4. **ライセンス更新**（`license_vN+1.yaml`）は、コンセプト変更が認証要件に影響する場合のみ行い、コミット前にスクリプトや手動チェックを再実行します。
 
-## Extending the system
+## システム拡張のアイデア
 
-- Implement additional Concepts by cloning the DocDD structure and updating IDs.
-- Automate the teacher ↔ mext loop by building CLI tools (for instance, calling
-  OpenAI APIs or other orchestration layers) and storing outputs in `logs/`.
-- Expand Licenses with richer scoring logic or integrate real usage telemetry.
-- Add future actors such as client personas, auto-curriculum builders, and MCP
-  integrations when you are ready for v2.
+- DocDD構造を複製し、IDを更新して新たなコンセプトを追加します。
+- teacher ↔ mext ループを自動化するCLIツール（OpenAI APIや他のオーケストレーターなど）を構築し、出力を `logs/` に保存します。
+- ライセンスに高度なスコアリングや実運用テレメトリを組み込みます。
+- v2に向けて、クライアントペルソナ、自動カリキュラムビルダー、MCP連携などのアクターを追加します。
 
-## License
+## ライセンス
 
-This repository currently focuses on documentation and sample data. Use and
-extend it within your AI experimentation projects.
+このリポジトリはドキュメントとサンプルデータに特化しています。AI実験プロジェクト内で自由に利用・拡張してください。
