@@ -1,0 +1,39 @@
+license_id: "docdd_license_v3"
+concept_id: "docdd"
+version: 3
+domain:
+  name: "software_delivery_governance"
+  subdomains:
+    - "requirements_management"
+    - "change_advisory_board"
+    - "regulated_cloud_operations"
+    - "distributed_team_collaboration"
+initial_score: 60
+validity:
+  type: "time_based"
+  review_cycle_days: 120
+scoring_rules:
+  positive:
+    - "マスタードキュメントと運用ノートを二層で維持し、差分リンクをDocDD Botが自動生成する"
+    - "例外運用を開始する際に開始/終了条件・責任者・影響範囲を記録し、期限内に復帰報告する"
+    - "CI/CDにDocDDチェックを組み込み、未更新の場合はPipelineをFailさせる"
+    - "四半期ごとに承認履歴完全性指数やリンクトレーサビリティ網羅率を測定し、改善アクションを定義する"
+    - "事業・技術・コンプラ合同のDocDDレビュー会を開催し、決定事項をログ化する"
+  negative:
+    - "例外運用を宣言せずDocDDをバイパスし、後追いで記録もしない"
+    - "Bot通知を恒常的に無視し、手動でPipelineを通過させる"
+    - "マスタードキュメントが3スプリント以上更新されず、実装差分との乖離を放置する"
+    - "承認ログから責任者や背景情報を削除・改変する"
+    - "DocDDイベントへのステークホルダー参加を怠り、意思決定が属人的になる"
+suspension_conditions:
+  - "DocDD同期遅延中央値が30日を超える状態が2回連続のレビューで確認された場合"
+  - "Bot阻止件数が0のまま重大な仕様齟齬リリースが発生した場合"
+  - "例外復帰遵守率が60%未満で、是正計画が提出されない場合"
+revocation_conditions:
+  - "承認履歴を意図的に削除・改ざんした事実が監査で認定された場合"
+  - "DocDD未実施が原因でコンプライアンス違反・重大インシデントを複数回発生させた場合"
+  - "サスペンド後60日以内に必要なメトリクス改善を証明できなかった場合"
+notes: |
+  v3ライセンスではBotや自動チェックを「必須ガードレール」と位置づける。テンプレートや
+  ワークフローのコード片を共有し、ライセンス更新時にCIログとDocDDメトリクスを提出させる。
+  分散環境では、各地域代表がDocDDイベントに委任出席し責任境界を文書化することを推奨。

@@ -1,0 +1,102 @@
+id: "docdd_v3"
+name: "DocDD (Document Driven Development)"
+version: 3
+
+definition:
+  summary: >
+    意思決定と変更管理を一本化する「戦略ドキュメント」を基点に、
+    チーム間の同期・監査・改善を自走させる運用フレーム。
+  details: |
+    v3では「戦略レベルのマスタードキュメント」と「実装レベルの運用ノート」の二層構造を採用し、
+    1) 目的・前提・リスク承認をマスタードキュメントで統一、
+    2) チケットやPRに紐づく運用ノートで差分をトレース、
+    3) 双方を自動リンクするDocDD Botを配置して乖離を即検知する。併せて、
+    合意の履歴・責任者・有効期限を明記し、プロトタイピングや緊急対応の例外ルールも
+    ドキュメント化しておくことで、スピードと統制を両立させる。
+
+usage_context:
+  description: >
+    可観測性・統制・スピードを同時に求められる大規模分散開発。特に、
+    多国籍チームや委託先が多く、監査証跡と意思決定の独立性が問われる環境。
+  examples:
+    - "医療・金融向けクラウドサービスで、製品/法務/セキュリティが同じ仕様書で承認するケース"
+    - "PLG型SaaSで高速リリースしつつ、各国データ規制ごとの条件を可視化したいケース"
+    - "ミッションクリティカルな自治体システムを複数ベンダーでリファクタリングするケース"
+
+decision_axes:
+  - name: "二層ドキュメントの同期度"
+    description: "マスタードキュメントと運用ノートが差分・リンク付きで同期されているか"
+  - name: "例外ルールの明文化度"
+    description: "緊急HotfixやPoCなどDocDDを緩める条件が文書化され、復帰条件が設定されているか"
+  - name: "意思決定トレーサビリティ"
+    description: "誰がいつどの背景で承認したか、証跡がワンクリックで辿れるか"
+  - name: "自動化ガードレール"
+    description: "BotやCIでドキュメント未更新を検知し、ワークフローを止める仕組みがあるか"
+  - name: "ステークホルダー巻き込み度"
+    description: "事業・技術・ガバナンス各ロールがDocDDイベントに定期参加しているか"
+
+primary_roles:
+  - "program_manager"
+  - "product_owner"
+  - "system_architect"
+  - "qa_lead"
+  - "sre_manager"
+  - "compliance_officer"
+
+anti_patterns:
+  - name: "単層ドキュメントへの回帰"
+    description: "マスタードキュメントしか更新されず、実装差分が口頭で処理される"
+  - name: "例外運用の放置"
+    description: "PoCや緊急対応の終了条件が書かれず、恒常的に統制が抜け落ちる"
+  - name: "Bot形骸化"
+    description: "自動チェックの通知を無視し続け、CIがRedでも強制Mergeしてしまう"
+  - name: "責任境界あいまい化"
+    description: "承認者と更新者が固定されず、誰もDocDDの整合性を持続的に見ない"
+  - name: "トレーサビリティの断絶"
+    description: "PR・リリースノート・ドキュメントが相互リンクされず監査で検索不能になる"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - DocDD Botによる未更新検出がレビュー前に働き、差分説明が義務化されているか
+      - 例外ルール発動時に、復帰計画と責任者が追記されているか
+      - マスタードキュメントの改訂会と運用ノートのふりかえりが定例化されているか
+      - ステークホルダー横断の意思決定ログをもとに、判断の質を振り返れているか
+  quantitative:
+    metrics:
+      - name: "DocDD同期遅延中央値"
+        description: "実装変更とマスタードキュメント更新の時間差中央値"
+      - name: "例外復帰遵守率"
+        description: "例外運用に復帰条件が書かれ、期限内に通常DocDDへ戻った割合"
+      - name: "Bot阻止件数"
+        description: "DocDD BotがCIをFailさせ、未整合のリリースを防いだ件数"
+      - name: "承認履歴完全性指数"
+        description: "意思決定ログが責任者・背景・影響範囲を満たしている割合"
+      - name: "リンクトレーサビリティ網羅率"
+        description: "ドキュメント→チケット→PR→リリースノートがチェーンで辿れる割合"
+
+examples:
+  success_cases:
+    - description: >
+        グローバル決済SaaSで二層DocDDとBotを導入し、未整合な仕様のリリースがゼロに。
+        例外復帰遵守率が95%を超え、外部監査の準備時間が半減した。
+  failure_cases:
+    - description: >
+        分散チームがDocDDを形式導入したが、例外ルールを未整備のまま緊急対応を続行。
+        復帰条件が失われ、Bot通知も無視した結果、監査で重大な証跡欠落が指摘された。
+
+relations:
+  synergies:
+    - "tdd"
+    - "ddd"
+    - "rfc_driven_development"
+    - "compliance_driven_dev"
+    - "observability_driven_ops"
+  conflicts:
+    - "prototype_only_style"
+    - "verbal_alignment_culture"
+    - "cowboy_deploy"
+  notes: >
+    PoC/実験段階ではDocDD-lite(運用ノートのみ)を認めつつ、正式採用のGo判定でマスター層に
+    昇格させるステージゲーティングを用意すると衝突を避けやすい。Observabilityコンセプトと
+    組み合わせれば、メトリクス変化をDocDD Botが自動で引用し意思決定理由に紐づけられる。
