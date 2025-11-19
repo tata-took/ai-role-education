@@ -1,0 +1,55 @@
+license_id: "docdd_license_v1"
+concept_id: "docdd_v1"
+version: 1
+
+domain:
+  name: "software_development"
+  subdomains:
+    - "web_app_requirements"
+    - "system_design_initial_phase"
+    - "regulated_projects"
+
+initial_score: 50
+
+validity:
+  type: "time_based"
+  review_cycle_days: 90
+
+scoring_rules:
+  positive:
+    - name: "ドキュメントを起点とした合意形成に成功"
+      score_delta: 3
+      example: "関係者全員がドキュメントを確認し、仕様変更がスムーズだったケース"
+    - name: "ドキュメント更新が実装と乖離していない"
+      score_delta: 2
+      example: "リリースごとに要件差分が反映されている"
+    - name: "レビューでDocDD遵守率を可視化"
+      score_delta: 1
+      example: "スプリントレビューにDocDDチェックリストを組み込み、100%達成"
+  negative:
+    - name: "ドキュメントと実装が大きく乖離する事故"
+      score_delta: -5
+      example: "重大な仕様齟齬でリリースが停止した"
+    - name: "誰もドキュメントを参照していない状態で開発が進んだ"
+      score_delta: -3
+      example: "口頭決定のみで重要仕様を変更し、顧客クレームにつながった"
+    - name: "承認フローが詰まり、変更が遅延"
+      score_delta: -2
+      example: "DocDD手順が硬直してスプリント2本分の遅れが発生"
+
+suspension_conditions:
+  - description: "重大な仕様齟齬によりプロジェクトを大きく後退させた"
+    threshold_score: 20
+  - description: "2サイクル連続でDocDDレビューに参加しなかった"
+    threshold_score: 25
+
+revocation_conditions:
+  - description: "連続する案件でDocDDが機能していないと判断された"
+    threshold_score: 10
+  - description: "虚偽のドキュメント更新を報告した"
+    threshold_score: 5
+
+notes: |
+  実際のスコア更新ロジックは今後実装予定。現段階では、DocDD免許を評価する
+  指標群と統制条件だけを定義している。review_cycle_days は暫定値であり、
+  プロジェクトの長さに合わせて調整できる。
