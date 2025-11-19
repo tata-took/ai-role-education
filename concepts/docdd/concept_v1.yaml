@@ -1,0 +1,85 @@
+id: "docdd_v1"
+name: "DocDD (Document Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    仕様や要件を先にドキュメントとして明文化し、
+    そのドキュメントを中心に開発を進める流儀。
+  details: |
+    DocDDは「会話でふわっと決まった」要件を排除し、誰が見ても同じ
+    意味で理解できるドキュメントを先に作るところから始まる。ドキュメント
+    には用語集・前提・制約・例外・更新手順を含め、実装とドキュメントが
+    常にリンクされるようPull Requestやスプリントレビューのチェック項目に
+    組み込む。企画・開発・運用が同じ資料を参照し続けることで、意思決定を
+    ドキュメント上で完結させることを目指す。
+
+usage_context:
+  description: >
+    ステークホルダーの認識が揃っていない状態で複数部門が動くプロジェクト、
+    もしくは非エンジニアを含む大人数で仕様調整を行うときに有効。契約や規制
+    により「誰が何を承認したか」を残す必要がある場合にも適する。
+  examples:
+    - "ステークホルダー間で要件認識がバラバラなシステム開発初期"
+    - "非エンジニアが多いプロジェクトで認識合わせが必要なとき"
+    - "監査対応が必要な公共系案件で要件改訂履歴を残したいとき"
+
+decision_axes:
+  - name: "曖昧さの削減"
+    description: "重要な概念や用語がドキュメント内で定義されているか"
+  - name: "合意形成度"
+    description: "関係者間でドキュメントに合意が取れているか"
+  - name: "変更容易性"
+    description: "要件変更をドキュメントに反映しやすい仕掛けがあるか"
+  - name: "運用定着度"
+    description: "レビューや開発儀式にDocDDが組み込まれているか"
+
+primary_roles:
+  - "pm"
+  - "product_owner"
+  - "system_architect"
+  - "tech_lead"
+
+anti_patterns:
+  - name: "ドキュメントだけ作って誰も読まない"
+    description: "目的を外れた形式的なドキュメント作成に終始する"
+  - name: "ドキュメントが実装と乖離し続ける"
+    description: "更新されない仕様書のまま放置し、現場との溝が広がる"
+  - name: "承認プロセスが遅延の温床になる"
+    description: "更新フローが重すぎて仕様変更のスピードを奪ってしまう"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 関係者がドキュメントを参照しながら会話できているか
+      - ドキュメントベースで意思決定や承認履歴が残っているか
+      - スプリントやリリースレビューでDocDDの遵守状況を確認しているか
+  quantitative:
+    metrics:
+      - name: "仕様差戻し件数"
+        description: "実装後に発覚した仕様の認識ズレの件数"
+      - name: "ドキュメント更新頻度"
+        description: "変更に追従しているかを見る指標"
+      - name: "レビュー指摘のドキュメント起因割合"
+        description: "リスク源を数値化して改善優先度を決める"
+
+examples:
+  success_cases:
+    - description: >
+        カオスな新規サービスでDocDDを導入。要件変更はすべてドキュメントで
+        先に合意してから実装し、仕様差戻しがリリース毎に1件以下へ減少した。
+  failure_cases:
+    - description: >
+        仕様書は豪華だが現場は誰も見ておらず、開発は口頭ベースで進行。
+        DocDDと称していたがメンテナンスされない資料の山になった。
+
+relations:
+  synergies:
+    - "tdd"
+    - "ddd"
+    - "rfc_driven_development"
+  conflicts:
+    - "prototype_only_style"
+  notes: >
+    TDDと組み合わせると仕様とテストの一貫性が取りやすい。プロトタイピング
+    中心の文化と衝突しやすいので、実験フェーズとDocDDフェーズを切り分ける。
