@@ -1,0 +1,38 @@
+schema_version: 1
+entity: client_persona
+fields:
+  id:
+    type: string
+    description: 個別ペルソナを一意に特定するID。
+  business_goal:
+    type: string
+    description: クライアントが達成したい最上位のビジネスゴール。
+  domain:
+    type: string
+    description: 事業ドメイン（例：教育SaaS、製造業DXなど）。
+  budget_level:
+    type: enum
+    allowed_values: [low, mid, high]
+    description: 投資可能な予算レンジ。low=最小限、mid=標準、high=積極投資。
+  risk_tolerance:
+    type: enum
+    allowed_values: [low, mid, high]
+    description: リスク許容度。意思決定スピードや実験許容量の指標。
+  decision_style:
+    type: string
+    description: 合議制 / ワンマン / 放置型 など、意思決定プロセスの特徴。
+  communication_style:
+    type: string
+    description: ロジカル / 感情強め / 厳しめ など、主要なコミュニケーション傾向。
+  success_criteria:
+    type: list
+    items:
+      type: string
+      description: 成功を判断する具体的な指標や到達状態。
+    description: プロジェクト成功を測る複数の観点。
+  anti_patterns:
+    type: list
+    items:
+      type: string
+      description: 取るべきでない振る舞い・NGシナリオ。
+    description: 過去の失敗や避けるべき対応パターンのリスト。

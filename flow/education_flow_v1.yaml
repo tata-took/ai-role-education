@@ -1,0 +1,51 @@
+flow_id: education_flow_v1
+summary: >-
+  Teacher → MEXT → License の3段階で、作業コンセプトを生成し、制度的な監査を経て
+  公開できる状態にする教育フロー。
+concepts_root: concepts
+config:
+  max_revision_loops: 3
+  approve_threshold: 12
+stages:
+  - id: teacher_stage
+    name: Concept Authoring
+    role: teacher_agent
+    prompt_ref: roles/teacher_agent_prompt.md
+    responsibilities:
+      - Gatherログやヒアリング内容からコンセプト草案をYAMLテンプレートで作成する。
+      - 自身で一次チェックを行い、MEXTが評価しやすい構造化を維持する。
+    handoff:
+      target_stage: mext_stage
+      artifacts:
+        - concept_yaml
+        - supporting_notes
+  - id: mext_stage
+    name: Institutional Review
+    role: mext_agent
+    prompt_ref: roles/mext_agent_prompt.md
+    responsibilities:
+      - teacher_agent の提出物を制度観点で評価し、改善点を列挙する。
+      - approve_threshold を満たすまで修正ループを指示する（最大 max_revision_loops 回）。
+    handoff:
+      target_stage: license_stage
+      readiness_criteria:
+        - 評価スコアが approve_threshold 以上である。
+        - 指摘事項がクローズされている。
+  - id: license_stage
+    name: Licensing & Publication
+    role: license_agent
+    prompt_ref: roles/license_agent_prompt.md
+    responsibilities:
+      - MEXTの承認済みコンセプトを受領し、公開フロー・ライセンス条文を確定する。
+      - ログ化・配布チャネル登録など、制度運用に必要な最終チェックを行う。
+    outputs:
+      - license_package
+      - publication_notice
+fallbacks:
+  escalation_roles:
+    - role: judge_agent
+      prompt_ref: roles/judge_agent_prompt.md
+      trigger: MEXTの監査ロジックが破綻したと判断した場合に、レビュー全体を差し戻す。
+    - role: meta_mext_agent
+      prompt_ref: roles/meta_mext_agent_prompt.md
+      trigger: MEXTの評価軸や制度設計自体を見直す必要が生じた場合。
