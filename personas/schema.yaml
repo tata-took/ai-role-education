@@ -1,0 +1,48 @@
+# 共通クライアントペルソナスキーマ
+type: object
+required:
+  - id
+  - business_goal
+  - domain
+  - budget_level
+  - risk_tolerance
+  - decision_style
+  - communication_style
+  - success_criteria
+  - anti_patterns
+properties:
+  id:
+    type: string
+    description: "ペルソナID。snake_case推奨"
+  business_goal:
+    type: string
+    description: "最上位の事業目標"
+  domain:
+    type: string
+    description: "所属業界または職能"
+  budget_level:
+    type: string
+    enum: [low, mid, high]
+    description: "プロジェクトに割ける予算感"
+  risk_tolerance:
+    type: string
+    enum: [low, mid, high]
+    description: "不確実性をどれだけ許容できるか"
+  decision_style:
+    type: string
+    description: "意思決定プロセス（例: data-driven, consensus, top-down）"
+  communication_style:
+    type: string
+    description: "好まれるコミュニケーション方法（例: async-detailed, sync-brief）"
+  success_criteria:
+    type: array
+    items:
+      type: string
+    minItems: 1
+    description: "成功を測定する指標や条件"
+  anti_patterns:
+    type: array
+    items:
+      type: string
+    minItems: 1
+    description: "避けるべき行動・意思決定パターン"
