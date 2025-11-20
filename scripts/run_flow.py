@@ -1,113 +1,118 @@
 #!/usr/bin/env python3
-"""Lightweight helper to preview the teacher → mext → license flow."""
+"""教育フロー自動実行スクリプト。
+
+LLM 呼び出し部分は未実装だが、フローの入出力とバージョン管理を
+ローカルで試せるようにする。
+"""
 
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import pathlib
+import re
 import sys
-from typing import Any, Dict, List
+from typing import Iterable
 
-try:
-    import yaml  # type: ignore
-except ImportError as exc:  # pragma: no cover
-    raise SystemExit("PyYAML is required to run this script") from exc
-
-REQUIRED_CONCEPT_FIELDS = [
-    "id",
-    "name",
-    "definition",
-    "usage_context",
-    "decision_axes",
-    "primary_roles",
-    "anti_patterns",
-    "evaluation",
-    "examples",
-    "relations",
-]
+import yaml
 
 
-def load_yaml(path: pathlib.Path) -> Dict[str, Any]:
-    with path.open("r", encoding="utf-8") as handle:
-        data = yaml.safe_load(handle)
-    if not isinstance(data, dict):  # pragma: no cover
-        raise ValueError(f"YAML at {path} is not a mapping")
-    return data
+def call_teacher_agent(concept_id: str, current_concept_yaml: str) -> str:
+    """TODO: teacher_agent_prompt.md を使って concept_v{n+1}.yaml を生成する"""
+
+    raise NotImplementedError
 
 
-def validate_concept(concept: Dict[str, Any]) -> List[str]:
-    missing = [field for field in REQUIRED_CONCEPT_FIELDS if field not in concept]
-    return missing
+def call_mext_agent(concept_id: str, new_concept_yaml: str) -> str:
+    """TODO: mext_agent_prompt.md を使って mext_review_v{n+1}.yaml を生成する"""
+
+    raise NotImplementedError
 
 
-def summarize_list(label: str, items: List[Any], limit: int = 3) -> str:
-    preview = ", ".join(str(item) for item in items[:limit])
-    suffix = "" if len(items) <= limit else " …"
-    return f"{label}: {preview}{suffix}"
+def call_license_agent(concept_id: str, mext_review_yaml: str) -> str:
+    """TODO: license_agent_prompt.md を使って license_v{n+1}.yaml を生成する"""
+
+    raise NotImplementedError
 
 
-def print_concept_summary(concept: Dict[str, Any]) -> None:
-    print("=== Concept ===")
-    print(f"ID: {concept.get('id')} | Name: {concept.get('name')}")
-    definition = concept.get("definition", {})
-    print(f"Summary: {definition.get('summary', 'N/A')}")
-    usage = concept.get("usage_context", {})
-    print(f"Usage description: {usage.get('description', 'N/A')}")
-    axes = concept.get("decision_axes", [])
-    if isinstance(axes, list):
-        axis_names = [axis.get("name", "?") for axis in axes if isinstance(axis, dict)]
-        print(summarize_list("Decision axes", axis_names))
-    roles = concept.get("primary_roles", [])
-    if isinstance(roles, list):
-        print(summarize_list("Primary roles", roles))
+def _load_yaml_text(path: pathlib.Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    # Validate YAML structure even though we keep original text for output.
+    yaml.safe_load(text)
+    return text
 
 
-def print_license_summary(license_data: Dict[str, Any]) -> None:
-    print("\n=== License ===")
-    print(f"License ID: {license_data.get('license_id')} (concept {license_data.get('concept_id')})")
-    domain = license_data.get("domain", {})
-    print(f"Domain: {domain.get('name')} / {', '.join(domain.get('subdomains', []))}")
-    print(f"Initial score: {license_data.get('initial_score')} | Review cycle: {license_data.get('validity', {}).get('review_cycle_days')} days")
-    positives = license_data.get("scoring_rules", {}).get("positive", [])
-    negatives = license_data.get("scoring_rules", {}).get("negative", [])
-    if positives:
-        print(summarize_list("Positive rules", [p.get('name', '?') for p in positives]))
-    if negatives:
-        print(summarize_list("Negative rules", [n.get('name', '?') for n in negatives]))
+def _dump_yaml_string(data: object) -> str:
+    return yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
+
+
+def _find_latest_version(files: Iterable[pathlib.Path]) -> tuple[int, pathlib.Path]:
+    version_pattern = re.compile(r"concept_v(\d+)\.yaml$")
+    latest_version = -1
+    latest_path: pathlib.Path | None = None
+    for path in files:
+        match = version_pattern.search(path.name)
+        if not match:
+            continue
+        version = int(match.group(1))
+        if version > latest_version:
+            latest_version = version
+            latest_path = path
+    if latest_path is None:
+        raise FileNotFoundError("No concept_v{n}.yaml found")
+    return latest_version, latest_path
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--concept", type=pathlib.Path, required=True, help="Path to concept YAML")
-    parser.add_argument("--license", type=pathlib.Path, required=True, help="Path to license YAML")
-    parser.add_argument("--review", type=pathlib.Path, help="Optional path to review YAML")
+    parser.add_argument("--concept-id", required=True, help="Concept ID (e.g., docdd)")
     args = parser.parse_args()
 
-    concept = load_yaml(args.concept)
-    missing_fields = validate_concept(concept)
-    if missing_fields:
-        print(f"Concept is missing required fields: {', '.join(missing_fields)}", file=sys.stderr)
+    concept_dir = pathlib.Path("concepts") / args.concept_id
+    if not concept_dir.exists():
+        print(f"Concept directory not found: {concept_dir}", file=sys.stderr)
         sys.exit(1)
-    print_concept_summary(concept)
 
-    license_data = load_yaml(args.license)
-    if license_data.get("concept_id") != concept.get("id"):
-        print("License concept_id does not match concept id", file=sys.stderr)
-        sys.exit(2)
-    print_license_summary(license_data)
+    concept_paths = list(concept_dir.glob("concept_v*.yaml"))
+    try:
+        current_version, current_path = _find_latest_version(concept_paths)
+    except FileNotFoundError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(1)
 
-    if args.review:
-        review = load_yaml(args.review)
-        decision = review.get("decision", "?")
-        total = review.get("total_score", "?")
-        print("\n=== Review ===")
-        print(f"Decision: {decision} | Total score: {total}")
-        items = review.get("items", [])
-        for item in items:
-            name = item.get("name")
-            score = item.get("score")
-            comment = item.get("comment")
-            print(f" - [{score}] {name}: {comment}")
+    current_concept_yaml = _load_yaml_text(current_path)
+    next_version = current_version + 1
+
+    try:
+        new_concept_yaml = call_teacher_agent(args.concept_id, current_concept_yaml)
+    except NotImplementedError:
+        new_concept_yaml = current_concept_yaml
+    new_concept_path = concept_dir / f"concept_v{next_version}.yaml"
+    new_concept_path.write_text(new_concept_yaml, encoding="utf-8")
+
+    try:
+        mext_review_yaml = call_mext_agent(args.concept_id, new_concept_yaml)
+    except NotImplementedError:
+        mext_review_yaml = _dump_yaml_string({"concept_id": args.concept_id, "version": next_version})
+    mext_review_path = concept_dir / f"mext_review_v{next_version}.yaml"
+    mext_review_path.write_text(mext_review_yaml, encoding="utf-8")
+
+    try:
+        license_yaml = call_license_agent(args.concept_id, mext_review_yaml)
+    except NotImplementedError:
+        license_yaml = _dump_yaml_string({"concept_id": args.concept_id, "version": next_version})
+    license_path = concept_dir / f"license_v{next_version}.yaml"
+    license_path.write_text(license_yaml, encoding="utf-8")
+
+    log_line = f"{dt.date.today()} {args.concept_id} v{current_version}->v{next_version} score=TODO/16\n"
+    logs_dir = pathlib.Path("logs")
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    (logs_dir / "education_sessions.md").open("a", encoding="utf-8").write(log_line)
+
+    print(f"Saved {new_concept_path}")
+    print(f"Saved {mext_review_path}")
+    print(f"Saved {license_path}")
+    print(f"Logged session to {logs_dir / 'education_sessions.md'}")
 
 
 if __name__ == "__main__":
