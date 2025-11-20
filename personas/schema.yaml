@@ -22,12 +22,12 @@ properties:
     description: "所属業界または職能"
   budget_level:
     type: string
-    enum: [low, mid, high]
-    description: "プロジェクトに割ける予算感"
+    enum: [low, mid, high, low-mid, mid-high]
+    description: "プロジェクトに割ける予算感（ハイブリッド表現も可: low-mid, mid-high など）"
   risk_tolerance:
     type: string
-    enum: [low, mid, high]
-    description: "不確実性をどれだけ許容できるか"
+    enum: [low, mid, high, unpredictable]
+    description: "不確実性をどれだけ許容できるか（予測困難な場合は unpredictable を使用）"
   decision_style:
     type: string
     description: "意思決定プロセス（例: data-driven, consensus, top-down, 合議制, ワンマン, 現場丸投げ など）"
