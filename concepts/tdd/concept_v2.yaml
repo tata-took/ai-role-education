@@ -1,0 +1,89 @@
+id: "tdd_v2"
+name: "TDD (Test Driven Development)"
+version: 2
+
+definition:
+  summary: >
+    失敗するテストを起点に仕様を固定し、Red-Green-Refactorの短サイクルで
+    実装と設計を進化させる開発フレーム。
+  details: |
+    TDD v2では「期待する振る舞いをテストで先に表現する」ことを徹底し、
+    テストがドキュメント・設計ガードレールとなる。ユニット〜統合テストを
+    小さく積み、ドメイン知識はテスト名・入力データ・期待結果で具体化する。
+    フィードバックを数分以内に得られる環境(CIやモック)を整え、リファクタリングを
+    日常化することで変更容易性と回帰防止を両立する。
+
+usage_context:
+  description: >
+    要求や設計が変化しやすいプロダクト開発、品質リスクを低コストで抑えたい
+    継続開発、クリティカルな振る舞いをコードで保証したい場面に適する。
+  examples:
+    - "マイクロサービスのAPI契約を守りつつ内部実装を改善するリファクタリング"
+    - "レガシーコードに安全網を張りながら段階的にモジュール置き換えを進める"
+    - "モバイルアプリで端末差異を吸収するためのコンポーネント単位の追加実装"
+
+decision_axes:
+  - name: "テスト駆動の厳格度"
+    description: "コードを書く前に失敗テストを用意し、仕様意図を明文化できているか"
+  - name: "フィードバック速度"
+    description: "テスト実行が数分以内で終わり、日常的に回せているか"
+  - name: "設計改善の継続性"
+    description: "リファクタリングをサイクルに組み込み、重複・依存を減らせているか"
+  - name: "テストの表現力"
+    description: "境界値や異常系を含め、振る舞い意図を読み取れるテスト名・データになっているか"
+  - name: "回帰防止カバレッジ"
+    description: "クリティカルパスが自動テストで保護され、変更時に即座に検知できるか"
+
+primary_roles:
+  - "software_engineer"
+  - "qa_engineer"
+  - "tech_lead"
+  - "platform_engineer"
+
+anti_patterns:
+  - name: "後付けテストで仕様を追認"
+    description: "実装後に形だけテストを書き、意図を表現できず設計改善も行わない"
+  - name: "過重な統合テスト頼り"
+    description: "単体テストがなく、大型統合テストだけでRed-Greenが遅延する"
+  - name: "モック乱用で信頼性低下"
+    description: "外部依存を全てモック化し、実運用の振る舞いと乖離する"
+  - name: "リファクタリング省略"
+    description: "Greenで終わり、設計の重複や命名の改善を後回しにする"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - テストケースが振る舞いの意図とドメイン知識を可読な形で示しているか
+      - CIで失敗テストから議論・修正が日常的に行われているか
+      - リファクタリングによる設計改善が定例レビューで共有されているか
+  quantitative:
+    metrics:
+      - name: "平均テストサイクル時間"
+        description: "Red-Green-Refactor一巡のリードタイム"
+      - name: "クリティカルパスカバレッジ"
+        description: "ビジネスクリティカルな経路に対する自動テストの網羅率"
+      - name: "回帰バグ率"
+        description: "リリース後の回帰不具合件数/リリース数"
+      - name: "リファクタリング頻度"
+        description: "テストを伴う設計改善コミットの割合"
+
+examples:
+  success_cases:
+    - description: >
+        マイクロサービスのAPIをTDDで拡張し、契約テストとユニットテストをセットで運用。
+        デプロイごとの回帰バグがほぼゼロになり、開発速度を維持したまま内部設計を刷新できた。
+  failure_cases:
+    - description: >
+        スプリント終盤にまとめてテストを書いたため、Greenまでのフィードバックが遅く
+        仕様認識のズレを初期に検知できず、リリース後に重大な回帰が多発した。
+
+relations:
+  synergies:
+    - "docdd"
+    - "ci_cd"
+    - "ddd"
+  conflicts:
+    - "prototype_only_style"
+    - "manual_regression_only"
+  notes: >
+    設計議論をテスト名とデータで行う文化を育てると、レビュー品質と属人性低減に効く。

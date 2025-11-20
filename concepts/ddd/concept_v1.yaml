@@ -1,0 +1,66 @@
+id: "ddd_v1"
+name: "DDD (Domain Driven Design)"
+version: 1
+
+definition:
+  summary: >
+    ドメイン知識を中心にユビキタス言語と境界付けられたコンテキストで
+    モデル化し、ソフトウェア設計を進める手法。
+  details: |
+    ドメイン専門家と開発者が共通言語を作り、コンテキストごとにモデルを分割。
+    エンティティや集約を明確にし、ビジネスルールをコードで表現する。
+
+usage_context:
+  description: >
+    複雑なビジネスルールや組織横断の要求がある場合に有効。
+  examples:
+    - "決済・在庫など複数サブドメインを持つECサービス"
+    - "部門ごとに異なる業務フローを持つ基幹システム刷新"
+
+decision_axes:
+  - name: "ユビキタス言語の整備度"
+    description: "用語がチームで統一されているか"
+  - name: "境界付けられたコンテキストの明確さ"
+    description: "責任範囲と連携方法が定義されているか"
+  - name: "モデルの実装一貫性"
+    description: "コードがモデル意図を反映しているか"
+
+primary_roles:
+  - "domain_expert"
+  - "software_architect"
+  - "backend_engineer"
+
+anti_patterns:
+  - name: "用語が人によって変わる"
+    description: "ユビキタス言語が確立していない"
+  - name: "巨大モノリス化"
+    description: "境界を切らずに単一モデルに集約する"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 用語の衝突が議論できているか
+      - モデル変更がビジネス意図から説明できるか
+  quantitative:
+    metrics:
+      - name: "コンテキスト間依存数"
+        description: "境界を越える依存関係の件数"
+      - name: "用語整合性のレビュー指摘"
+        description: "言葉のズレによる修正件数"
+
+examples:
+  success_cases:
+    - description: >
+        サブドメインごとにサービスを分離し、変更影響を限定できた。
+  failure_cases:
+    - description: >
+        用語統一を怠り、機能追加のたびに衝突が起きた。
+
+relations:
+  synergies:
+    - "tdd"
+    - "docdd"
+  conflicts:
+    - "short_term_feature_hacking"
+  notes: >
+    イベントストーミングなどワークショップ手法が有効。

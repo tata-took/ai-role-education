@@ -1,0 +1,65 @@
+id: "uxdd_v1"
+name: "UXDD (User Experience Driven Design)"
+version: 1
+
+definition:
+  summary: >
+    ユーザー体験を中心に要件や機能を決め、UX指標を満たす形で開発を進める。
+  details: |
+    ペルソナやユーザーストーリー、カスタマージャーニーを用いて価値仮説を作り、
+    体験の質をテストやプロトタイプで検証する。
+
+usage_context:
+  description: >
+    新規プロダクトや体験差別化が重要なサービスで有効。
+  examples:
+    - "オンボーディング改善"
+    - "モバイルアプリの導線最適化"
+
+decision_axes:
+  - name: "ユーザー理解"
+    description: "インサイトが言語化されているか"
+  - name: "体験価値の測定"
+    description: "UX指標が定義されているか"
+  - name: "検証サイクル"
+    description: "プロトタイピングとテストが回っているか"
+
+primary_roles:
+  - "product_manager"
+  - "ux_designer"
+  - "frontend_engineer"
+
+anti_patterns:
+  - name: "機能ドリブン"
+    description: "体験を考えず機能追加だけ進める"
+  - name: "テストなきリリース"
+    description: "ユーザーテスト無しで本番投入"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 体験のゴールが共有されているか
+      - ユーザーの声を設計に反映しているか
+  quantitative:
+    metrics:
+      - name: "タスク成功率"
+        description: "主要タスクの完了率"
+      - name: "NPS"
+        description: "推奨意向スコア"
+
+examples:
+  success_cases:
+    - description: >
+        プロトタイプで導線を検証し離脱率を低減。
+  failure_cases:
+    - description: >
+        ユーザー調査をせず、不要機能を量産した。
+
+relations:
+  synergies:
+    - "metricdd"
+    - "api_dd"
+  conflicts:
+    - "feature_factory"
+  notes: >
+    定性的調査と定量指標を組み合わせる。
