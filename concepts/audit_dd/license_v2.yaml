@@ -1,0 +1,43 @@
+license_id: "audit_dd_license_v2"
+concept_id: "audit_dd_v2"
+version: 2
+
+domain:
+  name: "compliance_engineering"
+  subdomains:
+    - "regulated_industries"
+    - "security_compliance"
+    - "data_protection"
+    - "governance_risk_compliance"
+
+initial_score: 50
+
+validity:
+  type: "time_based"
+  review_cycle_days: 180
+
+scoring_rules:
+  positive:
+    - "適用規制と範囲を明文化し、ログ/権限/変更管理要件をDocDDにリンクさせる"
+    - "ログスキーマと保全設定をIaC/CIで検証し、改ざん耐性と保全期間を満たす"
+    - "権限付与・剥奪の承認フローと証跡を運用し、定期レビューを実施する"
+    - "内部監査・自己点検の指摘をバックログ化し、是正完了までトラッキングする"
+  negative:
+    - "監査直前に場当たり的なログ追加を行い、証跡要件を満たさない"
+    - "権限管理を口頭で行い、承認・証跡を残さない"
+    - "監査指摘を放置し、同種の再発を繰り返す"
+    - "CI/CDに監査チェックを組み込まず、規制逸脱を検知できない"
+
+suspension_conditions:
+  - "重大な証跡不足や権限制御不備により監査不適合が発生し、是正計画に着手しない場合"
+  - "改ざん耐性や保全要件を満たさないログ運用を続け、インシデント時に証跡を提示できなかった場合"
+  - "権限付与/剥奪フローを無視した運用を繰り返し、内部統制を損なった場合"
+
+revocation_conditions:
+  - "監査証跡の改ざんや隠蔽が意図的に行われた場合"
+  - "規制違反や重大な情報漏えいをAuditDDの不履行により引き起こし、是正措置を拒否した場合"
+  - "繰り返しの監査不適合にもかかわらず改善を怠り、組織の信頼を毀損した場合"
+
+notes: |
+  半期ごとの監査レビューでスコアを見直し、証跡カバレッジと是正リードタイムを主要指標とする。
+  OpsDD/InfraDDと連携し、監査ログの可用性と保全ポリシーを運用に組み込む。

@@ -1,0 +1,90 @@
+id: "api_dd_v2"
+name: "APIDD (API Design Driven Development)"
+version: 2
+
+definition:
+  summary: >
+    APIを契約として先に設計・合意し、その契約をコード・テスト・ドキュメントに落とし込んで
+    並行開発と互換性維持を実現する手法。
+  details: |
+    APIDDはOpenAPI/GraphQL Schemaなどでリクエスト/レスポンス、エラー、認証/認可、レート制限、
+    バージョニング、非互換変更時の手順を仕様化する。仕様からモックやSDK、契約テストを自動生成
+    し、フロント/バック/外部パートナーが独立して開発できる状態を作る。Deprecationポリシーと
+    互換性チェックをCIに組み込み、利用状況のメトリクスを監視してAPI品質を維持する。
+
+usage_context:
+  description: >
+    複数クライアントを抱えるBFF構成、外部パートナー提供API、マイクロサービス間契約など、
+    変更の影響半径を抑えて開発速度を確保したい場合に有効。
+  examples:
+    - "モバイル/WEB/バックオフィスが同一APIを利用するSaaSでの契約設計"
+    - "外部企業向けの公開APIで互換性を保証しつつ進化させたい場合"
+    - "サービス間の契約変更を安全に進めたいマイクロサービス基盤"
+
+decision_axes:
+  - name: "契約の完全性"
+    description: "スキーマ、認証/認可、レート制限、エラーとバージョン方針が明示されているか"
+  - name: "並行開発とテストの仕掛け"
+    description: "モック・SDK・契約テストの自動生成により依存を解消できているか"
+  - name: "互換性とライフサイクル管理"
+    description: "非互換変更の告知、Deprecation期間、サンセット手順が定義されているか"
+  - name: "品質と可観測性"
+    description: "SLO、レイテンシ/エラー率のモニタリングがあり、SLO違反時の対応が決まっているか"
+  - name: "ガバナンスと合意形成"
+    description: "仕様変更のレビュー/承認フローと記録が整備されているか"
+
+primary_roles:
+  - "api_product_manager"
+  - "backend_engineer"
+  - "frontend_engineer"
+  - "mobile_engineer"
+  - "integration_engineer"
+  - "sre"
+
+anti_patterns:
+  - name: "暗黙の破壊的変更"
+    description: "仕様を更新せずにレスポンスを変更し、クライアントを壊す"
+  - name: "モックなし依存"
+    description: "他チームの実装待ちで開発が止まり、契約テストもない"
+  - name: "バージョン分岐の雪だるま"
+    description: "非互換変更を乱発し、クライアントごとのフォークが増殖する"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 仕様が単一ソースとして管理され、コード/ドキュメント/SDKと同期されているか
+      - 契約テストがCIに組み込まれ、破壊的変更を検知できているか
+      - Deprecationポリシーと告知フローが運用されているか
+  quantitative:
+    metrics:
+      - name: "契約テストカバレッジ"
+        description: "パブリック/内部APIに対する契約テストの網羅度"
+      - name: "互換性違反件数"
+        description: "リリース後に検知された破壊的変更の件数"
+      - name: "API品質SLO達成率"
+        description: "レイテンシ・エラー率・可用性のSLOを満たした割合"
+      - name: "仕様変更リードタイム"
+        description: "仕様改訂の合意からリリースまでの平均時間"
+
+examples:
+  success_cases:
+    - description: >
+        OpenAPIを単一ソースとし、モック・SDK・契約テストを自動生成。BFFと各クライアントが
+        並行開発でき、互換性違反がほぼゼロに抑えられた。
+  failure_cases:
+    - description: >
+        API変更を口頭で共有しただけでスキーマを更新せず、外部パートナーの連携が破壊。複数
+        バージョンが乱立し、保守コストが増大した。
+
+relations:
+  synergies:
+    - "docdd"
+    - "tdd"
+    - "contract_testing"
+    - "opsdd"
+  conflicts:
+    - "quick_and_dirty_prototyping"
+    - "feature_only_driven"
+  notes: >
+    DocDDでAPI仕様を要件として扱い、TDD/契約テストをCIに組み込むと乖離が防げる。Deprecation
+    の告知とモニタリングのSLOをOpsDDの運用設計に組み込むと良い。

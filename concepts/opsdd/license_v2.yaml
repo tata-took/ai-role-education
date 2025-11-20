@@ -1,0 +1,43 @@
+license_id: "opsdd_license_v2"
+concept_id: "opsdd_v2"
+version: 2
+
+domain:
+  name: "operations_engineering"
+  subdomains:
+    - "sre"
+    - "devops"
+    - "saas_operations"
+    - "regulated_operations"
+
+initial_score: 50
+
+validity:
+  type: "time_based"
+  review_cycle_days: 90
+
+scoring_rules:
+  positive:
+    - "四半期ごとのゲームデイを実施し、Runbook更新を伴う改善を完了する"
+    - "SLI/アラートをコードで管理し、CIで検証するパイプラインを維持する"
+    - "主要サービスでカナリアor段階的リリースを標準化し、ロールバック手順を自動化する"
+    - "オンコール負荷を可視化し、当番ローテーションを公平に運用する"
+  negative:
+    - "設定変更や権限付与をチャット・口頭で実施し、証跡を残さない"
+    - "Runbookが未検証のまま放置され、障害時に機能しない"
+    - "アラートノイズが長期放置され、オンコール疲弊を招いている"
+    - "SLA/セキュリティ要件を満たさないリリースを強行する"
+
+suspension_conditions:
+  - "重大インシデントで必要なRunbookや権限が欠如し、対応が遅延したことが監査で確認された場合"
+  - "アラート/監視設定が長期間無効化され、可観測性を著しく損ねた場合"
+  - "CABや変更承認を迂回する闇運用が繰り返された場合"
+
+revocation_conditions:
+  - "SLA違反または重大セキュリティ事故を、OpsDDプロセス欠如により複数回発生させた場合"
+  - "監査証跡の改ざんや、権限管理の意図的な無視が発覚した場合"
+  - "運用プロセスを無断で破棄し、再発防止策に応じない場合"
+
+notes: |
+  スコアの更新はインシデントレビューと連動させ、改善アクションの完了をもって加点する。
+  ロールごとに必要な権限セットを明確にし、緊急時の一時昇格手順も運用に含める。

@@ -1,0 +1,43 @@
+license_id: "riskdd_license_v2"
+concept_id: "riskdd_v2"
+version: 2
+
+domain:
+  name: "project_governance"
+  subdomains:
+    - "regulated_systems"
+    - "mission_critical"
+    - "platform_development"
+    - "cloud_migration"
+
+initial_score: 50
+
+validity:
+  type: "time_based"
+  review_cycle_days: 120
+
+scoring_rules:
+  positive:
+    - "リスク登録簿をスプリントごとに更新し、ステータスと根拠を記録する"
+    - "ハイリスク領域にスパイク/PoC/テストを実施し、結果をバックログ優先度に反映する"
+    - "リスクオーナーを明確にし、レビューで進捗を報告する"
+    - "インシデント後にポストモーテムを行い、スコアリング基準やガードレールを更新する"
+  negative:
+    - "リスク登録簿を作ったまま更新せず、意思決定に使わない"
+    - "未知技術や外部依存の検証を後回しにし、後半で致命的な障害を招く"
+    - "リスクオーナー不在のまま対策計画を放置する"
+    - "発生したリスクから学習せず、同じ問題を繰り返す"
+
+suspension_conditions:
+  - "計画されたリスクレビューを継続的に欠席または未実施とし、可視化が失われた場合"
+  - "ハイリスク項目の低減策を合意なく省略し、重大な逸脱が発生した場合"
+  - "リスク起因のインシデント後にポストモーテムや改善を拒否した場合"
+
+revocation_conditions:
+  - "意図的にリスク情報を隠蔽し、重大な損失を発生させた場合"
+  - "リスク登録簿や証跡を改ざんしたことが確認された場合"
+  - "合意したガードレールや監査対応を無視し、再三の指摘にも改善しない場合"
+
+notes: |
+  スコアの見直しは四半期レビューや監査結果と連動させると効果的。DocDDやOpsDDと組み合わせ
+  て、リスクと要件・運用手順のリンクを残すと再発防止に役立つ。

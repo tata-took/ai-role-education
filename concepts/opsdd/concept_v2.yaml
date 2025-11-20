@@ -1,0 +1,89 @@
+id: "opsdd_v2"
+name: "OpsDD (Operations Driven Development)"
+version: 2
+
+definition:
+  summary: >
+    運用要件を仕様の中心に据え、検知・復旧・変更管理を先に設計してから開発を進める
+    アプローチ。安定稼働を事業価値と捉え、実装・インフラ・手順書を運用観点で一貫させる。
+  details: |
+    OpsDDは「リリース後に運用を考える」状態を排し、SLO/SLI、アラート方針、Runbook、
+    権限設計、リリース戦略を最初のスプリントから並行で作る。ゲームデイや障害レビューで
+    得た知見をIaCやCI/CDのパイプラインに反映し、運用プロセスをコード化する。開発と運用
+    の役割境界を透明化し、緊急時に誰が何をどこまで自動で実行できるかを明示する。
+
+usage_context:
+  description: >
+    24/7運用が前提のサービス、SLA違反が即ペナルティとなる契約、複数サービスを少人数で
+    回すSRE/運用チームなど、可用性と変更安全性を両立させたい場面で有効。
+  examples:
+    - "オンコール負荷が高くMTTRが課題の商用SaaS"
+    - "規制業種で、権限付与や設定変更に監査証跡が必須のシステム"
+    - "サービス拡張で監視ノイズが増え、アラート疲れが起きている現場"
+
+decision_axes:
+  - name: "可観測性の設計品質"
+    description: "SLIとアラート基準が業務影響に紐づき、原因追跡に必要な計測が用意されているか"
+  - name: "障害対応力"
+    description: "Runbookの整備度、訓練の実施頻度、権限・自動化によりMTTRを短縮できているか"
+  - name: "変更の安全性"
+    description: "デプロイ戦略、ロールバック経路、設定変更のガードレールが機能しているか"
+  - name: "運用負荷の健全性"
+    description: "当番ローテーション、アラート量、手作業量が持続可能な水準か"
+  - name: "監査可能性"
+    description: "運用・設定変更がバージョン管理され、誰がいつ何をしたかが追跡可能か"
+
+primary_roles:
+  - "sre"
+  - "devops_engineer"
+  - "system_operator"
+  - "platform_engineer"
+  - "tech_lead"
+
+anti_patterns:
+  - name: "後付け監視と属人Runbook"
+    description: "障害後に場当たり的に監視を増やし、書いたRunbookが実行検証されない"
+  - name: "権限スパゲッティ"
+    description: "緊急時に必要な権限がなく、逆に恒常的に過剰権限が配布されている"
+  - name: "変更の闇運用"
+    description: "設定変更が口頭・チャットで実施され、ロールバック点や証跡が残らない"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 想定インシデントに対し、検知→対応→復旧の流れが演習され改善サイクルが回っているか
+      - IaC/CIによって監視設定やRunbookが自動テストされ、陳腐化を防げているか
+      - 変更審査やCABが運用実態に即し、リリース速度と安全性のバランスが取れているか
+  quantitative:
+    metrics:
+      - name: "MTTR"
+        description: "重大インシデントの平均復旧時間。演習と自動化で短縮を狙う"
+      - name: "有効アラート率"
+        description: "アラート総数に対する有効(アクションが必要)アラートの割合"
+      - name: "変更失敗率"
+        description: "デプロイや設定変更に起因する障害率"
+      - name: "Runbook更新率"
+        description: "月次で更新・検証されたRunbook件数の割合"
+
+examples:
+  success_cases:
+    - description: >
+        カナリアリリースと自動ロールバックを標準化し、ゲームデイで手順を磨いた結果、
+        主要SaaSのMTTRが40%短縮、夜間アラートが半減しオンコール負荷が軽減した。
+  failure_cases:
+    - description: >
+        IaCを導入したが運用手順がドキュメント化されず、権限不足で緊急対応が遅延。監査
+        対応の証跡も不足し、SLA違反と再発防止策要求を受けた。
+
+relations:
+  synergies:
+    - "devops"
+    - "site_reliability_engineering"
+    - "docdd"
+    - "incident_command_system"
+  conflicts:
+    - "feature_only_driven"
+    - "prototype_only_style"
+  notes: >
+    DocDDと組み合わせると運用手順と要件の同期が取りやすい。プロトタイピング初期は軽めの
+    運用を許容し、ベータ以降でOpsDDを強化するフェーズ設計が有効。

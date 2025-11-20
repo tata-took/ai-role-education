@@ -1,0 +1,43 @@
+license_id: "api_dd_license_v2"
+concept_id: "api_dd_v2"
+version: 2
+
+domain:
+  name: "api_product"
+  subdomains:
+    - "public_api"
+    - "bff"
+    - "microservices_contract"
+    - "partner_integration"
+
+initial_score: 50
+
+validity:
+  type: "time_based"
+  review_cycle_days: 120
+
+scoring_rules:
+  positive:
+    - "API仕様を単一ソースで管理し、SDK/ドキュメント/モックを自動生成するCIを維持する"
+    - "契約テストをCIに組み込み、破壊的変更を検知・阻止する"
+    - "Deprecationポリシーを運用し、告知・移行期間・サンセット手順を実行する"
+    - "利用状況メトリクスとSLOを監視し、逸脱時に対処するRunbookを持つ"
+  negative:
+    - "口頭やチャットのみでAPI仕様を変更し、スキーマやドキュメントを更新しない"
+    - "モックや契約テストがなく、他チームの実装待ちで開発が停止する"
+    - "破壊的変更を頻発させ、クライアントごとのフォークを量産する"
+    - "SLO違反やエラー率の悪化を放置する"
+
+suspension_conditions:
+  - "非互換変更を事前告知なく実施し、顧客障害やSLA違反を招いた場合"
+  - "契約テストやCIの無効化により、仕様と実装の乖離が繰り返し発生した場合"
+  - "Deprecationポリシーを無視し、サンセット手順を実施しなかった場合"
+
+revocation_conditions:
+  - "意図的な仕様改ざんや証跡改変で利用者に重大な損害を与えた場合"
+  - "再三の指摘にも関わらず破壊的変更を繰り返し、信頼を失墜させた場合"
+  - "API品質監視を放棄し、長期にわたりSLOを満たさなかった場合"
+
+notes: |
+  レビューは四半期ごとに行い、互換性違反やSLO逸脱を主要な減点トリガーとする。DocDD/TDD/OpsDD
+  と組み合わせ、要件・テスト・運用の同期を保つ。

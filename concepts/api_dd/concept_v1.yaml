@@ -1,0 +1,83 @@
+id: "api_dd_v1"
+name: "APIDD (API Design Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    API仕様を先に合意し、その契約を中心にフロント/バックエンドや外部連携を進める開発手法。
+  details: |
+    API DDはリクエスト/レスポンス、エラーモデル、認証/認可、レート制限、バージョニング方針
+    を仕様として固定し、モックや契約テストを用いて並行開発を可能にする。API仕様はドキュメント
+    兼テストの源泉とし、実装・ドキュメント・SDKが同期されるよう自動生成やCIを組み込む。
+
+usage_context:
+  description: >
+    外部パートナーとの連携や複数クライアントを持つサービスで、インターフェースの安定性が
+    重要な場面に適する。
+  examples:
+    - "モバイル・Web・バックオフィスが同一APIを使うBFF構成"
+    - "外部企業へ公開するパートナーAPIの設計"
+    - "マイクロサービス間の契約を明確にしたい場合"
+
+decision_axes:
+  - name: "契約の明確さ"
+    description: "エンドポイント・スキーマ・認証/認可・エラーハンドリングが明示されているか"
+  - name: "並行開発性"
+    description: "モックや契約テストが整備され、フロント/バックが独立に進められるか"
+  - name: "互換性維持"
+    description: "バージョニングと非互換変更の扱いが定義されているか"
+  - name: "品質保証"
+    description: "自動テスト・自動生成により仕様と実装の乖離を検知できるか"
+  - name: "運用/ライフサイクル管理"
+    description: "デprecationポリシーや利用状況のモニタリングが定義されているか"
+
+primary_roles:
+  - "api_product_manager"
+  - "backend_engineer"
+  - "frontend_engineer"
+  - "mobile_engineer"
+  - "sre"
+
+anti_patterns:
+  - name: "口約束のAPI変更"
+    description: "仕様変更を口頭で済ませ、クライアントが破壊的変更に巻き込まれる"
+  - name: "モックなしの連携テスト"
+    description: "開発初期に実環境への依存が強く、並行開発が止まる"
+  - name: "バージョン乱立"
+    description: "非互換変更が頻発し、クライアントごとに別APIが増殖する"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - API仕様がドキュメントとコードで一貫し、自動生成/テストが回っているか
+      - 非互換変更の手順と告知が運用されているか
+      - 利用状況やレイテンシなど品質指標を監視できているか
+  quantitative:
+    metrics:
+      - name: "契約テストカバレッジ"
+        description: "公開API/内部APIに対する契約テストの網羅度"
+      - name: "互換性違反件数"
+        description: "リリース後に破壊的変更が発生した件数"
+      - name: "API利用健康度"
+        description: "エラー率・レイテンシ・サクセス率などのSLO達成度"
+
+examples:
+  success_cases:
+    - description: >
+        OpenAPIで仕様を固め、モックと契約テストを先に整備。フロントとバックが並行開発でき、
+        リリース後の互換性問題が減少した。
+  failure_cases:
+    - description: >
+        仕様合意前に実装を進め、リリース直前にスキーマ変更が発生。クライアント修正が間に
+        合わずリリースが遅延した。
+
+relations:
+  synergies:
+    - "docdd"
+    - "tdd"
+    - "contract_testing"
+  conflicts:
+    - "quick_and_dirty_prototyping"
+  notes: >
+    APIのバージョン方針とDeprecationポリシーを早期に決め、SDK/ドキュメント生成をCIに組み込むと
+    乖離を防ぎやすい。

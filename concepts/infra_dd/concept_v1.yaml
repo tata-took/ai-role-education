@@ -1,0 +1,83 @@
+id: "infra_dd_v1"
+name: "InfraDD (Infrastructure Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    インフラ要件・アーキテクチャを先に設計し、IaCやプラットフォーム標準を起点に開発を進める
+    アプローチ。
+  details: |
+    InfraDDは可用性・性能・セキュリティ・コストなどインフラ非機能要件を明確にし、IaCと設計
+    パターンをテンプレート化する。環境構築を自動化し、開発と本番が同じ構成で動くよう標準を
+    整える。プラットフォームガードレール(ポリシー・自動チェック)を用意し、リリース前に非機能
+    要件を満たすかを検証する。
+
+usage_context:
+  description: >
+    マルチ環境を運用する組織、スケールやセキュリティ要件が厳しいプロダクト、IaCの標準化が
+    進んでいない現場で有効。
+  examples:
+    - "環境差分による障害が多発しているSaaS"
+    - "パフォーマンス要件が厳しいリアルタイム処理基盤"
+    - "コンプライアンス要件が多いクラウド利用"
+
+decision_axes:
+  - name: "非機能要件の明確さ"
+    description: "可用性・性能・セキュリティ・コストなどの指標とSLOが定義されているか"
+  - name: "IaCの成熟度"
+    description: "環境構築がコード化され、レビューとテストが行われているか"
+  - name: "標準化と再利用性"
+    description: "モジュールやテンプレートで再利用できる設計になっているか"
+  - name: "ガードレールと検証"
+    description: "ポリシー/自動チェック/負荷テストなどで逸脱を防げているか"
+  - name: "運用移行の容易さ"
+    description: "開発から本番への移行手順と権限が整備されているか"
+
+primary_roles:
+  - "platform_engineer"
+  - "devops_engineer"
+  - "sre"
+  - "system_architect"
+
+anti_patterns:
+  - name: "環境手作業"
+    description: "本番と開発で構成が異なる手作業設定に依存する"
+  - name: "テンプレート無視"
+    description: "標準化を無視したアドホックなリソース作成が乱立する"
+  - name: "非機能要件の曖昧さ"
+    description: "性能や可用性の目標がないままインフラを組む"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 非機能要件とSLOが明文化され、アーキテクチャで満たせているか
+      - IaCがレビュー・テストされ、変更が追跡できるか
+      - 標準モジュールやガードレールが運用され、逸脱が検知されているか
+  quantitative:
+    metrics:
+      - name: "IaCカバレッジ"
+        description: "インフラ構成のうちコードで管理される割合"
+      - name: "環境差分検知件数"
+        description: "自動チェックで検出された環境差分の件数と解消速度"
+      - name: "非機能SLO達成率"
+        description: "可用性・性能・コストなど設定したSLOの達成度"
+
+examples:
+  success_cases:
+    - description: >
+        標準モジュール化したIaCを導入し、開発・検証・本番の差分を自動検知。リリース後の
+        環境起因障害が大幅に減少した。
+  failure_cases:
+    - description: >
+        手作業構築のまま拡張し、本番だけ設定が違うことに気づかず障害が発生。変更履歴もなく
+        原因究明に時間がかかった。
+
+relations:
+  synergies:
+    - "opsdd"
+    - "docdd"
+    - "security_by_design"
+  conflicts:
+    - "ad_hoc_operations"
+  notes: >
+    IaCのテストをCIに組み込み、アプリ変更と同時に非機能SLO検証を回すと効果的。

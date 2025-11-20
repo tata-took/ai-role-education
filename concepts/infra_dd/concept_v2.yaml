@@ -1,0 +1,90 @@
+id: "infra_dd_v2"
+name: "InfraDD (Infrastructure Driven Development)"
+version: 2
+
+definition:
+  summary: >
+    非機能要件を先に定義し、IaCとプラットフォーム標準を軸にアーキテクチャと開発を組み立てる
+    手法。環境差分と運用リスクを最小化する。
+  details: |
+    InfraDDは可用性・性能・セキュリティ・コストのSLO/SLIを冒頭で設定し、それを満たす
+    リファレンスアーキテクチャとIaCモジュールを用意する。環境はすべてコードで構築し、
+    ポリシーasコードや静的解析、負荷/可観測性テストをCIに組み込んで逸脱を検知する。開発環境と
+    本番環境を同じテンプレートで構築し、リリース前に環境検証と権限レビューを通すことで、
+    環境起因の障害とセキュリティ事故を減らす。
+
+usage_context:
+  description: >
+    マルチテナントSaaSや規制産業で非機能要求が厳しい場合、マルチリージョン/マルチクラウド
+    を扱う組織、環境差分による障害が頻発している現場で有効。
+  examples:
+    - "PCI-DSS準拠が必要な決済基盤のインフラ設計"
+    - "マルチリージョン運用でDR設計を標準化したいSaaS"
+    - "IaCが未成熟で環境差分が多い組織の標準化プロジェクト"
+
+decision_axes:
+  - name: "非機能要件とSLOの明確さ"
+    description: "可用性・性能・セキュリティ・コストの目標と計測方法が定義されているか"
+  - name: "IaCと自動化の成熟度"
+    description: "環境構築・変更がコード化され、レビューと自動テストが行われているか"
+  - name: "標準化と再利用性"
+    description: "モジュール/テンプレートの再利用で環境差分を防げているか"
+  - name: "ガードレールと検証"
+    description: "ポリシーasコード、静的解析、負荷/可観測性テストがCI/CDに組み込まれているか"
+  - name: "移行と運用の容易さ"
+    description: "権限設計、リリース手順、DR/バックアップが整備され、移行リスクが管理されているか"
+
+primary_roles:
+  - "platform_engineer"
+  - "devops_engineer"
+  - "sre"
+  - "system_architect"
+  - "security_engineer"
+
+anti_patterns:
+  - name: "手作業パッチ"
+    description: "緊急対応で手作業変更を行い、IaCに反映せず差分が蓄積する"
+  - name: "標準テンプレートのスキップ"
+    description: "プロジェクト独自の設定を優先し、プラットフォーム標準を無視する"
+  - name: "非機能要件の無署名"
+    description: "SLOが決まらず、コストや性能の責任範囲が曖昧"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - SLO/SLIがIaCと運用手順に紐づき、レビューで守られているか
+      - 環境差分やセキュリティ逸脱をポリシー/CIで検知し、迅速に修正できているか
+      - テンプレートやモジュールが再利用され、例外は記録・レビューされているか
+  quantitative:
+    metrics:
+      - name: "IaCカバレッジ"
+        description: "インフラ構成のうちコード管理される割合"
+      - name: "環境差分検知件数"
+        description: "自動チェックで検出された差分とその解消までの時間"
+      - name: "非機能SLO達成率"
+        description: "可用性・性能・コスト・セキュリティSLOの達成度"
+      - name: "手作業変更件数"
+        description: "IaC外で実施された変更の件数と早期反映率"
+
+examples:
+  success_cases:
+    - description: >
+        IaCモジュールとポリシーasコードを標準化し、全環境で同一テンプレートを適用。環境差分
+        障害が激減し、リリース前の非機能チェックで性能問題を早期発見できた。
+  failure_cases:
+    - description: >
+        緊急対応で手作業パッチを繰り返し、IaCへ反映しないまま拡張。差分が蓄積して本番だけ
+        設定が異なり、セキュリティ事故と性能劣化を招いた。
+
+relations:
+  synergies:
+    - "opsdd"
+    - "docdd"
+    - "security_by_design"
+    - "platform_engineering"
+  conflicts:
+    - "ad_hoc_operations"
+    - "prototype_only_style"
+  notes: >
+    OpsDDと組み合わせてRunbookをIaC/CIで検証すると運用移行がスムーズ。非機能SLOとコストの
+    トレードオフを記録し、ガバナンスのレビューに活用する。

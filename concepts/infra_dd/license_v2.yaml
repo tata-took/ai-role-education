@@ -1,0 +1,43 @@
+license_id: "infra_dd_license_v2"
+concept_id: "infra_dd_v2"
+version: 2
+
+domain:
+  name: "platform_engineering"
+  subdomains:
+    - "cloud_infrastructure"
+    - "multi_region"
+    - "security_compliance"
+    - "cost_optimization"
+
+initial_score: 50
+
+validity:
+  type: "time_based"
+  review_cycle_days: 120
+
+scoring_rules:
+  positive:
+    - "非機能SLO/SLIを定義し、IaCテンプレートと紐づけてバージョン管理する"
+    - "ポリシーasコード・静的解析・負荷/可観測性テストをCIに組み込み、逸脱を検知する"
+    - "全環境を同一テンプレートで構築し、差分チェックを定期実行する"
+    - "手作業変更を記録し、IaCへ速やかに反映する運用を維持する"
+  negative:
+    - "環境を手作業で構築・変更し、IaCに反映しない"
+    - "標準テンプレートを無視したリソース作成を繰り返す"
+    - "非機能SLOを定義せず、コストや可用性の責任範囲が曖昧なまま運用する"
+    - "ポリシー/CIによる逸脱検知を無効化し、差分を放置する"
+
+suspension_conditions:
+  - "環境差分による重大障害を繰り返し、差分是正や標準化に取り組まない場合"
+  - "手作業変更が常態化し、IaCへの反映が行われない場合"
+  - "SLOやガードレールを無視してリリースを強行し、重大なセキュリティ/可用性事故を招いた場合"
+
+revocation_conditions:
+  - "IaCやポリシーの証跡を改ざんし、ガバナンスを意図的に無効化した場合"
+  - "重大な環境差分やセキュリティ逸脱を隠蔽し、再発防止策を拒否した場合"
+  - "標準化の破棄やガードレール無効化を指示し、組織に大きな損害を与えた場合"
+
+notes: |
+  OpsDDと連携し、ゲームデイやリリースゲートで非機能SLOの達成度を確認すると有効。コストと
+  パフォーマンスのトレードオフを定期レビューし、テンプレート更新に反映する。

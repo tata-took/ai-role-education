@@ -1,0 +1,39 @@
+items:
+  - id: 1
+    name: "概念定義の明確さ"
+    score: 2
+    comment: "規制・統制を仕様化し証跡を組み込む手法が明確に記述されている。"
+  - id: 2
+    name: "適用場面の具体性"
+    score: 2
+    comment: "規制業種・認証取得・委託先統制など状況が具体で導入判断しやすい。"
+  - id: 3
+    name: "判断軸の整理"
+    score: 2
+    comment: "要件定義、証跡完全性、プロセス組み込み、役割、改善の5軸で整理されている。"
+  - id: 4
+    name: "使用者ロールの明確さ"
+    score: 2
+    comment: "セキュリティ/コンプラ/プラットフォーム/SRE/PM/DPOが明記されている。"
+  - id: 5
+    name: "アンチパターンの列挙"
+    score: 2
+    comment: "後付けログ、権限制御の形骸化、監査儀式化など具体で実務的。"
+  - id: 6
+    name: "評価方法の充実度"
+    score: 2
+    comment: "定性ガイドとログカバレッジ・権限レビュー遵守率・再発率など定量指標が揃う。"
+  - id: 7
+    name: "成功/失敗事例のバランス"
+    score: 2
+    comment: "SOC監査成功例と証跡不足での失敗例が示されている。"
+  - id: 8
+    name: "類似コンセプトとの相性"
+    score: 2
+    comment: "DocDD/OpsDD/InfraDDとのシナジーと"move fast"文化との衝突が明記。"
+
+total_score: 16
+decision: "approved"
+summary_comment: |
+  監査要件の仕様化から運用組み込みまで具体的で、指標も整備されている。教材としてそのまま利用
+  できる水準。

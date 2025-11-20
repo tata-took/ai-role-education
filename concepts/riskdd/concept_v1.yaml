@@ -1,0 +1,84 @@
+id: "riskdd_v1"
+name: "RiskDD (Risk Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    リスクを明示し、優先順位と対応策を開発計画の中心に据える手法。リスクの可視化を通じて
+    設計・実装・運用の判断を行う。
+  details: |
+    RiskDDはプロジェクト開始時に技術的・運用的・ビジネス的リスクを洗い出し、影響度と発生
+    確率で評価する。高リスク領域に対してスパイク、PoC、監査、ガードレールのいずれかを
+    先行投入し、リリース計画やバックログをリスク低減効果で並べ替える。リスク登録簿を
+    継続更新し、リスクオーナーを設定して進捗をモニタリングする。
+
+usage_context:
+  description: >
+    不確実性の高い新規事業、複雑な外部連携や規制遵守が絡むシステム、大規模リプレースなど
+    失敗コストが高い場面に有効。
+  examples:
+    - "法規制対応を含む大規模基幹システムの刷新"
+    - "未知の技術スタックを採用する新規サービス"
+    - "多数の外部APIと契約条件が絡むプラットフォーム開発"
+
+decision_axes:
+  - name: "リスク識別の網羅性"
+    description: "技術・運用・ビジネス・法務・セキュリティなど多面的に洗い出せているか"
+  - name: "優先順位付け"
+    description: "影響度×発生確率で定量/半定量評価し、対応順序を決めているか"
+  - name: "対応策の具体性"
+    description: "スパイク、PoC、テスト、ガードレールなど具体的な低減策が計画されているか"
+  - name: "モニタリングとオーナーシップ"
+    description: "リスクオーナーとレビュー頻度が明確で、ステータス更新が行われているか"
+  - name: "学習とフィードバック"
+    description: "発生リスクやヒヤリハットから学び、プロセスに反映しているか"
+
+primary_roles:
+  - "product_manager"
+  - "system_architect"
+  - "tech_lead"
+  - "qa_lead"
+  - "compliance_officer"
+
+anti_patterns:
+  - name: "リスク一覧の形骸化"
+    description: "作成したリスク登録簿を更新せず、意思決定に使わない"
+  - name: "技術検証の後回し"
+    description: "未知技術を採用するのにスパイクを行わず、後半で致命的な問題が出る"
+  - name: "責任の所在不明"
+    description: "リスクオーナーが不在で、対策の進捗が追えない"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - リスクが意思決定やバックログ優先度に反映されているか
+      - ステータス更新やレビューが定例化しているか
+      - 失敗から得た教訓が次の計画に織り込まれているか
+  quantitative:
+    metrics:
+      - name: "高リスク対応率"
+        description: "高評価リスクに対して実施した低減策の割合"
+      - name: "リスクレビュー頻度"
+        description: "リスク登録簿を更新・レビューした回数"
+      - name: "リスク起因障害件数"
+        description: "未対応リスクが顕在化した障害や逸脱の件数"
+
+examples:
+  success_cases:
+    - description: >
+        新技術を採用する前にスパイクとPoCを実施し、性能ボトルネックを早期発見。代替案に
+        切り替えたことでリリース遅延と障害を回避できた。
+  failure_cases:
+    - description: >
+        リスク登録簿を作っただけで運用せず、外部APIの契約変更を見逃して障害が発生。回避策
+        を計画していなかったため復旧に時間がかかった。
+
+relations:
+  synergies:
+    - "docdd"
+    - "opsdd"
+    - "security_by_design"
+  conflicts:
+    - "feature_only_driven"
+  notes: >
+    リスクの粒度を合わせるために、評価軸とスコアリング基準をテンプレート化しておくと良い。

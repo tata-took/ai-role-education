@@ -1,0 +1,90 @@
+id: "audit_dd_v2"
+name: "AuditDD (Audit Driven Development)"
+version: 2
+
+definition:
+  summary: >
+    適用規制・社内統制を仕様として先に固め、証跡とガバナンスをコードとプロセスに組み込む
+    開発手法。監査を後付けにしない。
+  details: |
+    AuditDDはISO/SOC/業界規制などの要件をスコープとともに明文化し、ログ/証跡・権限管理・変更
+    管理・データ保護の要件をDocDDに組み込む。ログスキーマや保全期間、改ざん耐性を定義し、
+    CI/CDで静的解析・秘密情報検査・権限レビュー・監査証跡の自動生成を行う。内部監査や自己点検
+    をスプリントに組み込み、指摘事項をバックログ化して改善を継続する。
+
+usage_context:
+  description: >
+    規制業種や認証取得が必須のサービス、委託先を含めた統制が必要なプラットフォーム、証跡不足
+    によりインシデント対応が遅れている組織で有効。
+  examples:
+    - "SOC/ISO取得を目指すSaaSの開発・運用プロセス設計"
+    - "医療/金融システムでのアクセスログ・権限管理・データ保護要件の実装"
+    - "複数委託先が関わるプラットフォームで、変更管理と証跡を統合したい場合"
+
+decision_axes:
+  - name: "要件定義の明確さ"
+    description: "適用規制・範囲・除外が明記され、証跡・権限・保全要件が仕様化されているか"
+  - name: "証跡の完全性と耐改ざん性"
+    description: "ログ/変更履歴が改ざん耐性を備え、保全期間やアクセス制御が定義されているか"
+  - name: "プロセス組み込み度"
+    description: "CI/CDと運用手順に監査チェックが組み込まれ、継続運用されているか"
+  - name: "役割とガバナンス"
+    description: "監査オーナー・データオーナー・権限承認者など責任が明確か"
+  - name: "継続的改善"
+    description: "内部監査や自己点検のフィードバックがバックログ化され、改善が回っているか"
+
+primary_roles:
+  - "security_officer"
+  - "compliance_officer"
+  - "platform_engineer"
+  - "sre"
+  - "product_manager"
+  - "data_protection_officer"
+
+anti_patterns:
+  - name: "後付けログと証跡不足"
+    description: "監査直前にログ追加するが改ざん耐性や保全期間を満たさず、証跡が欠落する"
+  - name: "権限制御の形骸化"
+    description: "付与/剥奪が口頭・チケット外で行われ、証跡も承認者も残らない"
+  - name: "内部監査の儀式化"
+    description: "チェックリスト消化だけで改善がバックログに反映されない"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 適用規制と範囲、証跡要件がドキュメントとコードに落ちているか
+      - CI/CDで静的解析・権限レビュー・証跡生成が自動化され、逸脱時に止められるか
+      - 内部監査結果が改善タスクとして計画され、完了まで追跡されているか
+  quantitative:
+    metrics:
+      - name: "ログ/証跡カバレッジ"
+        description: "定義したイベント・操作のうち収集・保全されている割合"
+      - name: "権限レビュー遵守率"
+        description: "権限付与/剥奪時に承認・記録が残った割合"
+      - name: "監査指摘再発率"
+        description: "同一カテゴリの監査指摘が再発した割合"
+      - name: "監査対応リードタイム"
+        description: "指摘から是正完了までの平均日数"
+
+examples:
+  success_cases:
+    - description: >
+        監査要件をDocDDに落とし、権限レビューとログスキーマ検査をCIに組み込み。SOC監査で指摘ゼロ
+        を達成し、インシデント対応でも必要証跡を即座に提示できた。
+  failure_cases:
+    - description: >
+        証跡設計が遅れ、リリース後に監査指摘。急ごしらえのログは改ざん耐性を満たさず、再実装と
+        再監査でコストと信頼を失った。
+
+relations:
+  synergies:
+    - "docdd"
+    - "opsdd"
+    - "infra_dd"
+    - "security_by_design"
+  conflicts:
+    - "move_fast_break_things"
+    - "ad_hoc_operations"
+  notes: >
+    監査要件をコード化する際は、ログスキーマ・権限モデル・保全ポリシーをバージョン管理し、変更
+    時は監査チームと合意を取る。OpsDD/InfraDDと連携して証跡の可用性を担保する。
