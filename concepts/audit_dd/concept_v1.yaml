@@ -1,0 +1,86 @@
+id: "audit_dd_v1"
+name: "AuditDD (Audit Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    監査要件を起点に設計・実装・運用を組み立て、証跡とコンプライアンスを開発プロセスに組み込む
+    手法。
+  details: |
+    AuditDDは規制・社内統制・セキュリティ基準を要件として明文化し、ログ設計・権限管理・
+    変更管理・監査証跡を仕様に含める。監査証跡を自動生成・保全する仕組みを用意し、CI/CDや運用
+    手順に監査観点のチェックを組み込む。定期的な内部監査/自己点検で欠落を発見し、改善を
+    反映させる。
+
+usage_context:
+  description: >
+    金融・医療などの規制業種、ISMS等の認証取得やSOC報告が必要なサービス、内部統制が求められる
+    組織で有効。
+  examples:
+    - "ISO/ISMS取得を目指すSaaSの監査対応"
+    - "個人情報を扱う医療システムでのアクセスログ・権限管理設計"
+    - "外部委託先を含む変更管理と証跡が求められるプラットフォーム"
+
+decision_axes:
+  - name: "要件の明確さ"
+    description: "適用する規制・基準・社内ポリシーが定義され、範囲が特定されているか"
+  - name: "証跡の完全性"
+    description: "ログ・監査証跡・変更履歴が改ざん耐性と保全期間を満たすか"
+  - name: "プロセスへの組み込み"
+    description: "CI/CDや運用手順に監査チェックが組み込まれ、継続運用されているか"
+  - name: "役割と責任"
+    description: "監査オーナー・データオーナーが明確で、権限付与/剥奪フローが定義されているか"
+  - name: "継続的改善"
+    description: "内部監査・自己点検の結果がプロセス改善に反映されているか"
+
+primary_roles:
+  - "security_officer"
+  - "compliance_officer"
+  - "platform_engineer"
+  - "sre"
+  - "product_manager"
+
+anti_patterns:
+  - name: "後付けログ"
+    description: "監査直前にログを慌てて追加し、抜け漏れや改ざん耐性がない"
+  - name: "権限の野放し"
+    description: "権限付与/剥奪が口頭で、監査証跡が残らない"
+  - name: "定期点検の形骸化"
+    description: "内部監査がチェックリスト消化で改善に繋がらない"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 適用規制と範囲が明確で、証跡要件が設計に落ちているか
+      - 監査チェックがCI/CDや運用プロセスに組み込まれ、継続的に回っているか
+      - 内部監査結果が改善に結びついているか
+  quantitative:
+    metrics:
+      - name: "ログ/証跡カバレッジ"
+        description: "定義したイベントのうち収集・保全されている割合"
+      - name: "権限付与レビュー遵守率"
+        description: "権限付与/剥奪時の承認プロセス遵守率"
+      - name: "監査指摘の再発率"
+        description: "同種の監査指摘が繰り返された割合"
+
+examples:
+  success_cases:
+    - description: >
+        監査要件をDocDDに組み込み、ログスキーマと権限付与フローをIaC/CIで検証。SOC報告に必要な
+        証跡を自動収集でき、初回監査を一発で通過した。
+  failure_cases:
+    - description: >
+        リリース直前まで監査要件を考慮せず、証跡が不足。追加ログも改ざん耐性がなく、再実装と
+        再監査で大幅な手戻りが発生した。
+
+relations:
+  synergies:
+    - "docdd"
+    - "opsdd"
+    - "infra_dd"
+    - "security_by_design"
+  conflicts:
+    - "move_fast_break_things"
+  notes: >
+    監査要件はドキュメントとコードに二重で残し、証跡の保管ポリシーとアクセス権を明確にすると
+    運用が安定する。

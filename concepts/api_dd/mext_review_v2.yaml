@@ -1,0 +1,38 @@
+items:
+  - id: 1
+    name: "概念定義の明確さ"
+    score: 2
+    comment: "APIを契約として扱い、並行開発と互換性維持を狙う手法が明確。"
+  - id: 2
+    name: "適用場面の具体性"
+    score: 2
+    comment: "BFF構成や公開APIなど状況が明示され導入判断がしやすい。"
+  - id: 3
+    name: "判断軸の整理"
+    score: 2
+    comment: "契約完全性、並行開発、互換性、品質、ガバナンスの5軸で整理されている。"
+  - id: 4
+    name: "使用者ロールの明確さ"
+    score: 2
+    comment: "API PM/各種エンジニア/SREなど関係者が網羅されている。"
+  - id: 5
+    name: "アンチパターンの列挙"
+    score: 2
+    comment: "暗黙の破壊的変更やモックなし依存など具体的で回避策が取れる。"
+  - id: 6
+    name: "評価方法の充実度"
+    score: 2
+    comment: "契約テストカバレッジや互換性違反件数など定量指標が明記。"
+  - id: 7
+    name: "成功/失敗事例のバランス"
+    score: 2
+    comment: "モック自動生成で成功した例と口頭変更で失敗した例が対比され学びがある。"
+  - id: 8
+    name: "類似コンセプトとの相性"
+    score: 2
+    comment: "DocDD/TDD/契約テスト/OpsDDとの関係と、プロトタイピング文化との衝突が示されている。"
+
+total_score: 16
+decision: "approved"
+summary_comment: |
+  仕様を契約として扱う要点が具体的で、評価指標も揃っている。教材として十分活用可能。

@@ -1,0 +1,86 @@
+id: "opsdd_v1"
+name: "OpsDD (Operations Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    運用要件と運用チームの視点を起点にシステムを設計・実装し、運用性と安定性を最優先で
+    開発するアプローチ。
+  details: |
+    OpsDDは障害対応・監視・リリース・容量計画といった運用プロセスを先に設計し、開発の
+    早い段階で運用フローをプロトタイピングする。運用の手順書やSLOを仕様の一部とみなし、
+    実装やインフラ設計を運用要件で逆算することで、稼働後のMTTRやオペレーション負荷を
+    最小化する。開発と運用の間で役割分担を明確にしつつ、運用手順がCI/CDや監視設定に
+    自動化される状態をゴールとする。
+
+usage_context:
+  description: >
+    24/7運用が求められるプロダクト、SLO/SLAを契約で保証するサービス、少人数で複数
+    システムを運用する現場など、運用コストと安定性が事業リスクに直結する状況で有効。
+  examples:
+    - "夜間障害が事業損失につながる商用SaaSの運用設計"
+    - "運用員の少ないスタートアップでアラート過多が課題になっている場合"
+    - "金融・公共系で明確なSLAを守る必要がある案件"
+
+decision_axes:
+  - name: "検知と可観測性"
+    description: "重要な事象を自動検知でき、運用者が原因を追跡できる可視性があるか"
+  - name: "復旧容易性"
+    description: "MTTRを短縮するための手順・自動化・権限設計が備わっているか"
+  - name: "リリース安全性"
+    description: "ロールバックやカナリアリリースなど安全策が標準化されているか"
+  - name: "運用負荷"
+    description: "当番・手作業・アラート件数などの負荷が許容範囲に収まる設計か"
+  - name: "変更管理"
+    description: "運用手順と設定変更がバージョン管理・監査可能な形で管理されているか"
+
+primary_roles:
+  - "sre"
+  - "devops_engineer"
+  - "system_operator"
+  - "tech_lead"
+
+anti_patterns:
+  - name: "監視後付け"
+    description: "リリース直前に慌てて監視やアラートを追加し、漏れや誤検知が多発する"
+  - name: "属人化した手順"
+    description: "特定の運用担当だけが知る手順が多く、引き継ぎできない"
+  - name: "変更管理の不透明化"
+    description: "設定変更や権限付与が口頭・チャットで行われ、監査証跡が残らない"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 障害シナリオに対する演習(ゲームデイ)が実施され、手順が改善されているか
+      - 運用設計がCI/CDやInfrastructure as Codeと一体化しているか
+      - アラート・Runbookが定期レビューされ、廃止や統合が行われているか
+  quantitative:
+    metrics:
+      - name: "MTTR"
+        description: "重大インシデントの平均復旧時間"
+      - name: "アラート健全率"
+        description: "有効アラート比率やノイズ比率で可観測性の品質を測る"
+      - name: "変更失敗率"
+        description: "デプロイや設定変更に伴う障害発生率"
+
+examples:
+  success_cases:
+    - description: >
+        重要度の高いSaaSでOpsDDを採用し、ゲームデイを定期開催。RunbookをCIで検証し、
+        MTTRが半減、アラート誤検知が30%削減された。
+  failure_cases:
+    - description: >
+        開発完了後に監視だけ追加し運用開始。アラートが深夜に連発し、Runbookがなく復旧
+        が遅延。リリース停止により事業影響が出た。
+
+relations:
+  synergies:
+    - "devops"
+    - "site_reliability_engineering"
+    - "incident_command_system"
+  conflicts:
+    - "feature_only_driven"
+    - "ad_hoc_operations"
+  notes: >
+    プロダクトフェーズでの実験速度と運用安定性のバランスを取るため、リリース段階で
+    OpsDDのプロセスを強化するフェーズ分けが有効。

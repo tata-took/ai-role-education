@@ -1,0 +1,83 @@
+id: "metricdd_v1"
+name: "MetricDD (Metric Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    意思決定と実装を、事業とユーザーの成果を測る指標で駆動させる開発アプローチ。
+  details: |
+    MetricDDはKGI/KPIや北極星指標を設定し、仮説と施策を指標に紐づけて優先順位付けする。
+    設計時から計測ポイントを仕込み、デプロイ後すぐに指標が取れる状態にする。定性と定量を
+    組み合わせて指標を定期的に見直し、実験の結果で施策を継続/停止/改善する。データ欠損や
+    計測遅延のリスクも想定し、ダッシュボードやアラートで計測品質を監視する。
+
+usage_context:
+  description: >
+    グロースフェーズのプロダクト、A/Bテストを繰り返す新機能開発、開発リソースが限られる
+    中で投資対効果を最大化したい場面に適する。
+  examples:
+    - "LTVや継続率を改善したいサブスクリプションサービス"
+    - "広告費用対効果を見ながら施策を高速に回す成長チーム"
+    - "顧客行動データに基づきUXの改善サイクルを回したい場合"
+
+decision_axes:
+  - name: "指標の妥当性"
+    description: "指標が事業目標に直結し、先行・遅行指標のバランスが取れているか"
+  - name: "計測設計の一貫性"
+    description: "計測ポイントやイベントスキーマが設計段階から定義され、実装されているか"
+  - name: "検証サイクル"
+    description: "仮説→実験→分析→意思決定のループが回る仕組みがあるか"
+  - name: "データ品質と可用性"
+    description: "欠測や遅延に対するモニタリングとアラートが用意されているか"
+  - name: "ステークホルダー合意"
+    description: "指標の定義や算出方法が共有され、誤解がないか"
+
+primary_roles:
+  - "product_manager"
+  - "data_analyst"
+  - "growth_pm"
+  - "engineer"
+  - "designer"
+
+anti_patterns:
+  - name: "指標の後付け"
+    description: "リリース後に慌てて計測を追加し、データ欠損で意思決定できない"
+  - name: "虚栄KPI依存"
+    description: "事業成果に結びつかない表面的な数字だけを追い、改善が進まない"
+  - name: "スキーマ乱立"
+    description: "チームごとにイベント定義がバラバラで、比較や集計が困難"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - 主要指標と代替指標が合意され、変更手順が明文化されているか
+      - 実験結果の振り返りが定例化し、次の施策に反映されているか
+      - データ欠損・異常を検知し、迅速に修正できる体制があるか
+  quantitative:
+    metrics:
+      - name: "計測カバレッジ"
+        description: "設計したイベントの実装率およびデータ欠損率"
+      - name: "実験サイクル時間"
+        description: "仮説立案から結果判定までの平均日数"
+      - name: "指標定義の変更頻度"
+        description: "合意を伴う指標更新の回数とそのリードタイム"
+
+examples:
+  success_cases:
+    - description: >
+        北極星指標とドライバー指標を定義し、計測を前倒しで実装。A/Bテストで改善効果を
+        迅速に判断でき、無駄な施策を停止して開発リソースを集中できた。
+  failure_cases:
+    - description: >
+        指標が曖昧なまま実装を進め、リリース後に計測漏れが発覚。データが揃うまで意思決定
+        が遅れ、改善サイクルが止まった。
+
+relations:
+  synergies:
+    - "docdd"
+    - "tdd"
+    - "growth_hacking"
+  conflicts:
+    - "feature_only_driven"
+  notes: >
+    指標は固定ではなく更新されることを前提に、バージョニングと変更履歴を残すと混乱を防げる。
