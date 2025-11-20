@@ -1,0 +1,38 @@
+items:
+  - id: 1
+    name: "概念定義の明確さ"
+    score: 2
+    comment: "Red-Green-Refactorと仕様固定の意図が具体的に示されている。"
+  - id: 2
+    name: "適用場面の具体性"
+    score: 2
+    comment: "変更が多いプロダクトやリファクタリングなど状況+条件が明記されている。"
+  - id: 3
+    name: "判断軸の網羅性"
+    score: 2
+    comment: "フィードバック速度や表現力など5軸で実践判断が可能。"
+  - id: 4
+    name: "使用者ロールの明確さ"
+    score: 2
+    comment: "エンジニア系ロールが具体名で列挙されている。"
+  - id: 5
+    name: "禁止事項の列挙"
+    score: 2
+    comment: "後付けテストやモック乱用などアンチパターンが具体。"
+  - id: 6
+    name: "評価方法の両輪"
+    score: 2
+    comment: "定性ガイドと定量メトリクスがセットで記述。"
+  - id: 7
+    name: "成功・失敗事例"
+    score: 2
+    comment: "API拡張成功とスプリント末失敗の対比がある。"
+  - id: 8
+    name: "類似コンセプトとの相性"
+    score: 2
+    comment: "DocDDやCI/CDとのシナジー、プロトタイプ文化との衝突が明記。"
+total_score: 16
+decision: "approved"
+summary_comment: |
+  実務シナリオと判断軸が十分具体的で、教材としてそのまま利用可能。
+  実例を継続的に追加してテスト表現の良い/悪い例を補強するとさらに良い。

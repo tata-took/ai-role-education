@@ -1,0 +1,89 @@
+id: "uxdd_v2"
+name: "UXDD (User Experience Driven Design)"
+version: 2
+
+definition:
+  summary: >
+    体験ゴールを起点に仮説→プロトタイプ→検証を短周期で回し、UX指標で意思決定する
+    プロダクト開発フレーム。
+  details: |
+    UXDD v2では、ペルソナ・ジョブ・ジャーニーを明確にし、価値仮説を
+    北極星指標と補助KPIに落とす。紙/デジタルプロトタイプを用いて定性インタビューと
+    定量トラッキングを組み合わせ、リリース前後で学習する。開発中も計測タグと
+    フィードバック窓口を設け、ユーザーの痛みを最短で解消する。
+
+usage_context:
+  description: >
+    体験差別化が勝負の新規サービス、オンボーディング改善、複数チャネルを跨ぐ
+    顧客接点刷新など、ユーザー行動の摩擦を継続的に減らしたい場面。
+  examples:
+    - "SaaSのトライアル転換率を上げるためのオンボーディング再設計"
+    - "ECでカート放棄率を下げるためのモバイルUX改善"
+    - "サポート問い合わせ削減を狙ったセルフサーブ導線の構築"
+
+decision_axes:
+  - name: "ユーザー理解の深さ"
+    description: "インサイト・ペルソナ・ジョブが検証に基づき更新されているか"
+  - name: "体験指標の整備"
+    description: "北極星指標と補助指標が行動計測で追える状態か"
+  - name: "検証サイクル速度"
+    description: "プロトタイプ〜本番計測までのリードタイムが短いか"
+  - name: "チャネル一貫性"
+    description: "Web/アプリ/サポートで体験が途切れずに繋がっているか"
+  - name: "フィードバック反映度"
+    description: "ユーザーの声がバックログやデザインシステムに反映されているか"
+
+primary_roles:
+  - "product_manager"
+  - "ux_designer"
+  - "frontend_engineer"
+  - "data_analyst"
+  - "customer_success"
+
+anti_patterns:
+  - name: "機能数至上主義"
+    description: "体験価値より機能追加を優先し、UX指標を計測しない"
+  - name: "一度きりのユーザーテスト"
+    description: "初回調査で満足し、リリース後に行動データを追わない"
+  - name: "チャネル断絶"
+    description: "Webとアプリで用語・導線が揃わず、ユーザーが迷子になる"
+  - name: "計測タグ欠落"
+    description: "イベント設計をせず、効果検証ができないまま意思決定する"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - UXゴールと指標がチームに共有され、レビューで参照されているか
+      - ユーザーインサイトが更新され、デザインシステムやバックログに反映されているか
+      - リリース後の行動データをもとに改善が計画されているか
+  quantitative:
+    metrics:
+      - name: "主要タスク成功率"
+        description: "ジャーニー上のキーアクション完遂率"
+      - name: "オンボーディング完了率"
+        description: "初期設定やチュートリアル完了の割合"
+      - name: "UX関連問い合わせ率"
+        description: "体験の迷い・不明点に起因する問い合わせ件数の比率"
+      - name: "NPS/CSAT"
+        description: "推奨意向や満足度の定期計測値"
+
+examples:
+  success_cases:
+    - description: >
+        オンボーディングをプロトタイプでAB検証し、計測タグで完了率を追跡。
+        転換率が20%改善し、サポート問い合わせも減少した。
+  failure_cases:
+    - description: >
+        機能追加を急ぎ計測設計を後回しにした結果、リリース後にどの施策が効いたか
+        分からず改善が止まった。
+
+relations:
+  synergies:
+    - "metricdd"
+    - "api_dd"
+    - "riskdd"
+  conflicts:
+    - "feature_factory"
+    - "output_only_management"
+  notes: >
+    UX指標と技術的制約を早期にすり合わせ、計測の仕込みを開発前に終えることが鍵。

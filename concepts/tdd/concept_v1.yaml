@@ -1,0 +1,69 @@
+id: "tdd_v1"
+name: "TDD (Test Driven Development)"
+version: 1
+
+definition:
+  summary: >
+    先にテストを書き、テストを通す形で最小コードを実装し、リファクタリングで
+    設計を整えていく開発手法。
+  details: |
+    Red-Green-Refactorの短いサイクルを回し、要求をテストケースとして具体化する。
+    テストが仕様の代わりとなり、バグの早期発見と安全なリファクタリングを支える。
+
+usage_context:
+  description: >
+    仕様が頻繁に変わる小〜中規模機能や、品質を守りつつ素早いフィードバックが
+    欲しいチームで有効。
+  examples:
+    - "APIの振る舞いを固定しながら内部実装を改善したいとき"
+    - "既存コードにテストがなく、安全に変更を加えたいとき"
+    - "小さな単位で進捗を確認したいリモート開発チーム"
+
+decision_axes:
+  - name: "テスト先行度"
+    description: "コードを書く前に期待結果をテスト化できているか"
+  - name: "サイクルの短さ"
+    description: "Red-Green-Refactorを小刻みに回せているか"
+  - name: "回帰防止力"
+    description: "テストが設計の意図とバグ防止に貢献しているか"
+
+primary_roles:
+  - "software_engineer"
+  - "qa_engineer"
+  - "tech_lead"
+
+anti_patterns:
+  - name: "テストを書かずにGreenから始める"
+    description: "既存コードに合わせた後付けテストで仕様化しない"
+  - name: "巨大なテストケース"
+    description: "粒度が大きすぎてフィードバックが遅くなる"
+
+evaluation:
+  qualitative:
+    guidelines: |
+      - テストが仕様の意図を示し、読みやすいか
+      - 失敗するテストを起点に議論できているか
+  quantitative:
+    metrics:
+      - name: "テストサイクル時間"
+        description: "Red-Green-Refactor1周の平均時間"
+      - name: "回帰バグ率"
+        description: "既存機能でのバグ再発件数"
+
+examples:
+  success_cases:
+    - description: >
+        新機能をTDDで実装し、レビューでテストを仕様として参照できた。
+        変更後も回帰バグが発生しなかった。
+  failure_cases:
+    - description: >
+        テストが遅すぎて日常運用されず、結局手動確認に戻った。
+
+relations:
+  synergies:
+    - "docdd"
+    - "ci_cd"
+  conflicts:
+    - "big_bang_delivery"
+  notes: >
+    テストのメンテ負荷に注意し、観点を絞ったテストを書く。

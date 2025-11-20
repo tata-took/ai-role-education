@@ -1,0 +1,31 @@
+license_id: "tdd_license_v2"
+concept_id: "tdd_v2"
+version: 2
+domain:
+  name: "software_development"
+  subdomains:
+    - "backend"
+    - "mobile"
+    - "testing_platform"
+initial_score: 50
+validity:
+  type: "time_based"
+  review_cycle_days: 90
+scoring_rules:
+  positive:
+    - "失敗テストを先に書いたコミットが継続的に記録されている"
+    - "クリティカルパスのカバレッジを四半期ごとに報告している"
+    - "リファクタリング成果を設計メモやADRに残し共有している"
+  negative:
+    - "テストを後付けし仕様の意図が読み取れない状態でレビューを通過させた"
+    - "統合テストのみでサイクルが長期化し、TDDのリズムを崩した"
+    - "モック乱用で実環境との差分障害を繰り返した"
+suspension_conditions:
+  - "クリティカルパスで回帰バグが複数回連続して発生した場合"
+  - "CIで失敗テストを放置したままリリースを強行した場合"
+revocation_conditions:
+  - "テスト無しで本番障害を重大度Sで発生させたことが判明した場合"
+  - "レビューでのテスト捏造や結果改ざんが確認された場合"
+notes: |
+  教材としてのライセンス。チームごとに計測対象のクリティカルパスを定義し、
+  レトロスペクティブでメトリクスを見直すことを推奨。

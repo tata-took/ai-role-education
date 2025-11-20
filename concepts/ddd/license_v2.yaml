@@ -1,0 +1,30 @@
+license_id: "ddd_license_v2"
+concept_id: "ddd_v2"
+version: 2
+domain:
+  name: "software_architecture"
+  subdomains:
+    - "business_systems"
+    - "saas_platform"
+    - "enterprise_integration"
+initial_score: 50
+validity:
+  type: "time_based"
+  review_cycle_days: 120
+scoring_rules:
+  positive:
+    - "ユビキタス言語の用語集を更新し、ステークホルダーと合意を取っている"
+    - "コンテキストマップを四半期ごとに見直し、依存を整理した"
+    - "集約の不変条件をテストで担保し、リリース後の整合性違反をゼロにした"
+  negative:
+    - "境界を無視してデータ連携し、不整合バグを発生させた"
+    - "用語の意味を変更したのにドキュメント・コードを更新しなかった"
+    - "共有データベース化でチーム間の独立性を損ねた"
+suspension_conditions:
+  - "コンテキスト間依存が急増し、チームが独立デプロイできない状態が続いた場合"
+  - "用語の衝突が原因で重大障害を複数回発生させた場合"
+revocation_conditions:
+  - "モデル改変を無断で行い、ビジネス不変条件を破って重大な損失を招いた場合"
+  - "ドキュメントやテストを偽装して境界逸脱を隠蔽した場合"
+notes: |
+  組織変更と連動して境界を再設計する文化があるかを定期点検すること。

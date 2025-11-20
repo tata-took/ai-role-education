@@ -1,0 +1,30 @@
+license_id: "uxdd_license_v2"
+concept_id: "uxdd_v2"
+version: 2
+domain:
+  name: "product_design"
+  subdomains:
+    - "saas"
+    - "mobile_app"
+    - "ecommerce"
+initial_score: 50
+validity:
+  type: "time_based"
+  review_cycle_days: 90
+scoring_rules:
+  positive:
+    - "北極星指標とUXイベント計測をリリース前に準備した"
+    - "ユーザーテスト結果をバックログとデザインシステムに反映した"
+    - "チャネル横断の言語・導線を統一し、問い合わせを削減した"
+  negative:
+    - "計測タグ漏れで施策効果を測れなかった"
+    - "機能追加を優先しUX検証をスキップした"
+    - "ユーザーの不満が継続的に蓄積しているのに改善サイクルを回さなかった"
+suspension_conditions:
+  - "重大なUX欠陥(離脱や誤操作)が連続し、計測も行われていない場合"
+  - "ユーザーテスト・サーベイを計画的に実施せず、半年以上放置した場合"
+revocation_conditions:
+  - "ユーザー行動データを改ざん・隠蔽し、意思決定を誤らせた場合"
+  - "同意なく個人情報を収集するなど倫理違反を繰り返した場合"
+notes: |
+  評価サイクルごとに計測イベントの棚卸しを行い、UX KPIの見直しを推奨。
