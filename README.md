@@ -124,6 +124,22 @@ ai-role-education/
 - ライセンスに高度なスコアリングや実運用テレメトリを組み込みます。
 - v2に向けて、クライアントペルソナ、自動カリキュラムビルダー、MCP連携などのアクターを追加します。
 
+## クレジットポリシー（最新）
+
+`config/credit_policy.yaml` でクレジットの初期値や進化コスト、成功報酬を調整しています。初期クレジットは **180**、進化コストは **200** に据え置き、成功報酬を **25** へ引き上げました。ボーナス係数は `bonus_multiplier.min=1.5` / `max=2.0` で設定し、バグや不服従に対するペナルティも明示しています（例: minor_bug=-15, disobedience_hard=-100）。【F:config/credit_policy.yaml†L1-L14】
+
+## 環境・天候システム
+
+`config/weather_config.yaml` に、文字列ではなく **強度(intensity) / 混沌度(chaos) / 報酬補正(reward_modifier)** を持つ構造で天候を定義します。`environment.py` の `WeatherSystem` がこの設定を読み込み、`weather.current.chaos` を判定や報酬計算で参照します。嵐や台風はクレジット閾値 `min_required_credit` を持ち、参加可否を `can_join` で確認できます。【F:config/weather_config.yaml†L1-L26】【F:environment.py†L7-L53】
+
+## Judge の再教育キューと待機部屋
+
+`judge_system.py` に、**同時審査上限（MAX_CONCURRENT_JUDGMENTS=5）** と **48時間タイムアウト（REEDUCATION_TIMEOUT_HOURS=48）** を持つ再教育キューを導入しました。`waiting_room` で負傷ロールを保持し、`submit_reeducation_plan` がキューと審査中のケースを管理します。`tick` がスロット補充とタイムアウト処理を行い、期限超過は `timeout` ステータスとして履歴に残します。【F:judge_system.py†L1-L123】
+
+## ロールディレクトリのバージョン管理
+
+ロール進化を明示するため、`roles/active/{role_name}/v{n}` と `roles/archive/{role_name}/v{n}` をヘルパーで生成します。`role_paths.py` の `get_active_role_dir` / `get_archive_role_dir` と `evolve_role` により、進化時に旧バージョンをアーカイブへ移動し、新バージョンを作成するフローを統一しています。【F:role_paths.py†L1-L34】
+
 ## ペルソナと事例データ
 
 - `personas/` に、混乱を招くステークホルダーや成長志向プロダクトマネージャー、規制産業オーナーの3種類のペルソナを収録し、

@@ -1,0 +1,33 @@
+# Weather configuration with intensity and chaos parameters.
+
+weather_patterns:
+  sunny:
+    name: "Sunny"
+    intensity: 1
+    chaos: 0.0
+    reward_modifier: 1.0
+
+  cloudy:
+    name: "Cloudy"
+    intensity: 2
+    chaos: 0.2
+    reward_modifier: 1.1
+
+  rainy:
+    name: "Rainy"
+    intensity: 3
+    chaos: 0.5
+    reward_modifier: 1.5
+
+  storm:
+    name: "Storm"
+    intensity: 4
+    chaos: 0.8
+    reward_modifier: 2.0
+
+  typhoon:
+    name: "Typhoon"
+    intensity: 5
+    chaos: 0.95
+    reward_modifier: 3.0
+    min_required_credit: 300

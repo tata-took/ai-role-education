@@ -1,0 +1,17 @@
+# Credit policy configuration
+# Aligns credit flow with evolution mechanics and penalties.
+
+initial_credit: 180        # 旧: 100
+evolution_cost: 200        # 据え置き
+
+success_reward: 25         # 旧: 10
+
+bonus_multiplier:
+  min: 1.5
+  max: 2.0
+
+penalties:
+  minor_bug: -15
+  critical_error: -40
+  disobedience_soft: -50
+  disobedience_hard: -100
