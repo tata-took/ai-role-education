@@ -66,7 +66,29 @@ def _find_latest_version(files: Iterable[pathlib.Path]) -> tuple[int, pathlib.Pa
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--concept-id", required=True, help="Concept ID (e.g., docdd)")
+    parser.add_argument(
+        "--flow",
+        "--flow-config",
+        dest="flow_config",
+        default="flow/education_flow_v1.yaml",
+        help="Flow definition to use (default: flow/education_flow_v1.yaml)",
+    )
     args = parser.parse_args()
+
+    flow_path = pathlib.Path(args.flow_config)
+    if not flow_path.exists():
+        print(f"Flow file not found: {flow_path}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        flow_config = yaml.safe_load(flow_path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:  # pragma: no cover - defensive path
+        print(f"Failed to parse flow YAML: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+    flow_name = flow_config.get("flow_name", "(unknown flow)")
+    flow_version = flow_config.get("version", "(unknown version)")
+    print(f"Using flow: {flow_name} v{flow_version} ({flow_path})")
 
     concept_dir = pathlib.Path("concepts") / args.concept_id
     if not concept_dir.exists():

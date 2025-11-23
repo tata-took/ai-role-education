@@ -12,6 +12,20 @@
 - **license_agent** — 承認済みコンセプトごとにライセンス定義を設計し、他のAIロールに測定可能な資格
   を付与できるようにします。
 
+## Ver 3.x アーキテクチャ概要（拡張）
+
+- **Router が入口**: 依頼や案件の特徴に応じて、必要なロールとドメインHat（専門モジュール）を選定し、
+  フローの経路と優先順位を決めます。
+- **少数ロール + Hat モデル**: ロール乱立を避け、Planner/PM・Contract & Ethics・Teacher/Trainee といった
+  コアロールに Hat を被せて専門性を切り替えます。
+- **プリミティブの明示**: Collect / Structure / Plan / Generate / Verify / Negotiate という標準動作を軸に、
+  ロールがどの手順で進むかを説明できるようにします。
+- **理不尽スコアと Human-in-the-Loop**: Contract & Ethics が 0〜100 の理不尽スコアを監視し、Lv.3 以上では
+  Trainee/Teacher を停止して再交渉または終了提案に切り替えます。契約解消・ブラックリスト登録などは必ず
+  人間（Founder）が承認する前提です。
+- **フロー v2 の追加**: Router 起点のステージと理不尽スコア分岐を含む `flow/education_flow_v2.yaml` /
+  `flow/education_flow_v2.md` を追加し、v1 の teacher→mext→license フローもそのまま併存させます。
+
 ## リポジトリ構成
 
 ```
