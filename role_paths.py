@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 BASE_ROLES_DIR = Path("roles")
 ACTIVE_DIR = BASE_ROLES_DIR / "active"
@@ -32,3 +33,37 @@ def evolve_role(role_name: str, current_version: int) -> int:
     new_active_dir.mkdir(parents=True, exist_ok=True)
 
     return new_version
+
+
+def _role_prompt_sort_key(path: Path) -> tuple[int, str]:
+    match = re.search(r"_v(\d+)\.md$", path.name)
+    version = int(match.group(1)) if match else -1
+    return (version, path.name)
+
+
+def find_role_prompt(role_name: str) -> Path:
+    """Return the latest prompt file for a given role name.
+
+    The function searches for files that follow ``{role_name}_agent_prompt*.md``
+    under ``roles/`` and prefers the highest version suffix (e.g. ``_v3``).
+    """
+
+    candidates = list(BASE_ROLES_DIR.glob(f"{role_name}_agent_prompt*.md"))
+    if not candidates:
+        raise FileNotFoundError(f"No prompt found for role '{role_name}'")
+
+    candidates.sort(key=_role_prompt_sort_key, reverse=True)
+    return candidates[0]
+
+
+def load_role_prompt(role_name: str, *, explicit_path: Path | None = None) -> str:
+    """Load the system prompt text for a role.
+
+    Args:
+        role_name: Logical role identifier (e.g., ``teacher``).
+        explicit_path: When provided, load from this path instead of resolving
+            the latest version.
+    """
+
+    path = explicit_path or find_role_prompt(role_name)
+    return path.read_text(encoding="utf-8")

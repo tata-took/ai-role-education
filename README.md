@@ -8,7 +8,7 @@ AI ロール教育のためのプロンプト、フロー定義、サンプル�
 - **コンセプトデータ**: `concepts/<concept_id>/` に concept・mext_review・license の各 YAML をバージョン付きで保存しています（api_dd / audit_dd / ddd / docdd / infra_dd / metricdd / opsdd / riskdd / tdd / uxdd）。
 - **設定ファイル**: クレジット配分 (`config/credit_policy.yaml`) と天候パターン (`config/weather_config.yaml`) を用意しています。
 - **簡易ヘルパー**: 天候の可否判定クラス（`environment.py`）、再教育キューのスタブ（`judge_system.py`）、ロールバージョン管理のパス生成ヘルパー（`role_paths.py`）。
-- **動作サンプルスクリプト**: `scripts/run_flow.py` でフローとコンセプトの読み書きだけを試せます（LLM 生成は未実装）。
+- **動作サンプルスクリプト**: `scripts/run_flow.py` でフローとコンセプトの読み書きを試せます。LLM 呼び出しは差し替え可能なクライアント層を通じて行い、デフォルトでは Dummy クライアントがプロンプトをエコーします。
 - **その他**: `case_law/` は判例データのプレースホルダ、`logs/` はローカル実行時のログ出力先です。
 
 ## リポジトリ構成
@@ -18,7 +18,7 @@ ai-role-education/
 ├─ flow/               # education_flow_v1/v2 の説明と YAML 定義
 ├─ concepts/           # コンセプトごとの versioned YAML（concept / mext_review / license）
 ├─ config/             # クレジット・天候設定
-├─ scripts/            # 簡易実行スクリプト（LLM 呼び出しは未実装）
+├─ scripts/            # 簡易実行スクリプト（LLM クライアント差し替え可能）
 ├─ environment.py      # 天候クラスと参加可否判定
 ├─ judge_system.py     # 再教育キューのスタブ実装
 ├─ role_paths.py       # ロールのバージョンディレクトリ補助
@@ -33,7 +33,8 @@ ai-role-education/
 ## サンプルスクリプトの使い方
 `python scripts/run_flow.py --concept-id <id>` で指定コンセプトの最新バージョンを読み、次バージョンの concept/mext_review/license を作成して `logs/education_sessions.md` に履歴を追記します。
 
-- LLM 生成部分 (`call_teacher_agent` / `call_mext_agent` / `call_license_agent`) は `NotImplementedError` なので、実際には既存 YAML を複製し、レビューとライセンスは最小のプレースホルダを出力します。
+- LLM クライアントは `llm_client.py` の `LLMClient` プロトコル経由で呼び出され、デフォルトでは `DummyEchoClient` がシステム・ユーザープロンプトを整形して返します。
+- 実運用で OpenAI/Gemini などを利用する場合は `llm_client.py` のスケルトン実装を差し替え、API キーは環境変数（例: `OPENAI_API_KEY`）から参照してください。
 - 事前に `concepts/<id>/concept_v*.yaml` が存在しない場合は失敗します。
 
 ```bash
