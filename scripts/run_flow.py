@@ -16,17 +16,49 @@ from typing import Iterable
 
 import yaml
 
-from llm_client import DummyEchoClient, LLMClient
+from llm_client import DummyEchoClient, LLMClient, get_llm_client, get_model_settings
 from role_paths import load_role_prompt
+
+
+def _complete_with_role(
+    role_name: str,
+    *,
+    client: LLMClient | None,
+    system_prompt: str,
+    user_prompt: str,
+    debug: bool,
+) -> str:
+    """Resolve model configuration for a role and run completion."""
+
+    settings = get_model_settings(role_name)
+    provider = settings.get("provider", "openai")
+    model = settings.get("model")
+    temperature = settings.get("temperature")
+
+    selected_client = client or get_llm_client(provider)
+    if debug:
+        client_name = selected_client.__class__.__name__
+        print(
+            f"[DEBUG] role={role_name} provider={provider} model={model} "
+            f"temperature={temperature} client={client_name}"
+        )
+
+    return selected_client.complete(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        model=model,
+        temperature=temperature,
+    )
 
 
 def call_teacher_agent(
     concept_id: str,
     current_concept_yaml: str,
     *,
-    client: LLMClient,
+    client: LLMClient | None,
     output_path: pathlib.Path,
     extra_context: str = "",
+    debug: bool = False,
 ) -> str:
     """Use teacher_agent prompt to propose the next concept version."""
 
@@ -40,7 +72,13 @@ def call_teacher_agent(
             extra_context or "(none)",
         ]
     )
-    response = client.complete(system_prompt=system_prompt, user_prompt=user_prompt)
+    response = _complete_with_role(
+        "teacher",
+        client=client,
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        debug=debug,
+    )
     return _parse_or_fallback_yaml(
         response,
         output_path=output_path,
@@ -52,9 +90,10 @@ def call_mext_agent(
     concept_id: str,
     new_concept_yaml: str,
     *,
-    client: LLMClient,
+    client: LLMClient | None,
     output_path: pathlib.Path,
     extra_context: str = "",
+    debug: bool = False,
 ) -> str:
     """Use mext_agent prompt to produce a review YAML."""
 
@@ -68,7 +107,13 @@ def call_mext_agent(
             extra_context or "(none)",
         ]
     )
-    response = client.complete(system_prompt=system_prompt, user_prompt=user_prompt)
+    response = _complete_with_role(
+        "mext",
+        client=client,
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        debug=debug,
+    )
     fallback = _dump_yaml_string({"concept_id": concept_id, "status": "pending"})
     return _parse_or_fallback_yaml(response, output_path=output_path, fallback_yaml=fallback)
 
@@ -77,9 +122,10 @@ def call_license_agent(
     concept_id: str,
     mext_review_yaml: str,
     *,
-    client: LLMClient,
+    client: LLMClient | None,
     output_path: pathlib.Path,
     extra_context: str = "",
+    debug: bool = False,
 ) -> str:
     """Use license_agent prompt to produce a license YAML."""
 
@@ -93,7 +139,13 @@ def call_license_agent(
             extra_context or "(none)",
         ]
     )
-    response = client.complete(system_prompt=system_prompt, user_prompt=user_prompt)
+    response = _complete_with_role(
+        "license",
+        client=client,
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        debug=debug,
+    )
     fallback = _dump_yaml_string({"concept_id": concept_id, "license": "TBD"})
     return _parse_or_fallback_yaml(response, output_path=output_path, fallback_yaml=fallback)
 
@@ -202,10 +254,11 @@ def _invoke_generic_stage(
     inputs: list[pathlib.Path],
     outputs: list[pathlib.Path],
     generated_artifacts: dict[pathlib.Path, str],
-    client: LLMClient,
+    client: LLMClient | None,
     description: str,
     concept_id: str,
     version: int,
+    debug: bool,
 ) -> None:
     system_prompt = load_role_prompt(stage_id, explicit_path=pathlib.Path(role_prompt_path) if role_prompt_path else None)
     input_texts = _load_inputs(inputs, generated_artifacts)
@@ -217,7 +270,13 @@ def _invoke_generic_stage(
             "\n---\n".join(input_texts) if input_texts else "(no inputs)",
         ]
     )
-    response = client.complete(system_prompt=system_prompt, user_prompt=user_prompt)
+    response = _complete_with_role(
+        stage_id,
+        client=client,
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        debug=debug,
+    )
 
     for idx, output_path in enumerate(outputs):
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -246,6 +305,17 @@ def main() -> None:
         dest="flow_config",
         default="flow/education_flow_v1.yaml",
         help="Flow definition to use (default: flow/education_flow_v1.yaml)",
+    )
+    parser.add_argument(
+        "--llm-provider",
+        choices=["dummy", "openai"],
+        default="dummy",
+        help="LLM provider to use for all roles (default: dummy)",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable verbose logging for role-to-model resolution",
     )
     args = parser.parse_args()
 
@@ -279,7 +349,11 @@ def main() -> None:
     current_concept_yaml = _load_yaml_text(current_path)
     concepts_root = flow_config.get("concepts_root", "concepts")
     generated_artifacts: dict[pathlib.Path, str] = {current_path: current_concept_yaml}
-    client: LLMClient = DummyEchoClient()
+    client: LLMClient | None
+    if args.llm_provider == "openai":
+        client = get_llm_client("openai")
+    else:
+        client = DummyEchoClient()
 
     stage_version = current_version
     final_version = current_version
@@ -317,6 +391,7 @@ def main() -> None:
                 client=client,
                 output_path=concept_output_path,
                 extra_context=extra_context,
+                debug=args.debug,
             )
             concept_output_path.parent.mkdir(parents=True, exist_ok=True)
             concept_output_path.write_text(new_concept_yaml, encoding="utf-8")
@@ -324,7 +399,10 @@ def main() -> None:
 
             for extra_output in outputs[1:]:
                 extra_output.parent.mkdir(parents=True, exist_ok=True)
-                teacher_note = f"Teacher produced concept v{stage_version + 1} using DummyEchoClient."
+                client_name = client.__class__.__name__ if client else "ConfiguredClient"
+                teacher_note = (
+                    f"Teacher produced concept v{stage_version + 1} using {client_name}."
+                )
                 extra_output.write_text(teacher_note, encoding="utf-8")
                 generated_artifacts[extra_output] = teacher_note
 
@@ -343,6 +421,7 @@ def main() -> None:
                 client=client,
                 output_path=mext_output_path,
                 extra_context=extra_context,
+                debug=args.debug,
             )
             mext_output_path.parent.mkdir(parents=True, exist_ok=True)
             mext_output_path.write_text(mext_review_yaml, encoding="utf-8")
@@ -367,6 +446,7 @@ def main() -> None:
                 client=client,
                 output_path=license_output_path,
                 extra_context=extra_context,
+                debug=args.debug,
             )
             license_output_path.parent.mkdir(parents=True, exist_ok=True)
             license_output_path.write_text(license_yaml, encoding="utf-8")
@@ -384,6 +464,7 @@ def main() -> None:
             description=description,
             concept_id=args.concept_id,
             version=stage_version,
+            debug=args.debug,
         )
 
     logs_dir = pathlib.Path("logs")

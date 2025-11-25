@@ -1,0 +1,24 @@
+default:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.3
+
+teacher:
+  provider: openai
+  model: gpt-4o
+  temperature: 0.2
+
+trainee:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.4
+
+contract:
+  provider: openai
+  model: gpt-4o
+  temperature: 0.1
+
+mext:
+  provider: openai
+  model: gpt-4o
+  temperature: 0.2

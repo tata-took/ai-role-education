@@ -6,9 +6,9 @@ AI ロール教育のためのプロンプト、フロー定義、サンプル�
 - **ロールプロンプト**: Router / Planner(PM) / Contract & Ethics / Teacher / Trainee / MEXT / License / Judge などの v3 世代ドキュメントが `roles/` 配下にあります。
 - **教育フロー定義**: 直列の v1 と、Router を入り口にした v2 をそれぞれ Markdown と YAML で収録しています (`flow/education_flow_v1.*`, `flow/education_flow_v2.*`)。
 - **コンセプトデータ**: `concepts/<concept_id>/` に concept・mext_review・license の各 YAML をバージョン付きで保存しています（api_dd / audit_dd / ddd / docdd / infra_dd / metricdd / opsdd / riskdd / tdd / uxdd）。
-- **設定ファイル**: クレジット配分 (`config/credit_policy.yaml`) と天候パターン (`config/weather_config.yaml`) を用意しています。
+- **設定ファイル**: クレジット配分 (`config/credit_policy.yaml`)、天候パターン (`config/weather_config.yaml`)、ロールごとのモデル設定 (`config/models.yaml`) を用意しています。
 - **簡易ヘルパー**: 天候の可否判定クラス（`environment.py`）、再教育キューのスタブ（`judge_system.py`）、ロールバージョン管理のパス生成ヘルパー（`role_paths.py`）。
-- **動作サンプルスクリプト**: `scripts/run_flow.py` でフローとコンセプトの読み書きを試せます。LLM 呼び出しは差し替え可能なクライアント層を通じて行い、デフォルトでは Dummy クライアントがプロンプトをエコーします。
+- **動作サンプルスクリプト**: `scripts/run_flow.py` でフローとコンセプトの読み書きを試せます。LLM 呼び出しは差し替え可能なクライアント層を通じて行い、デフォルトでは Dummy クライアントがプロンプトをエコーします。ロールごとに異なるモデル設定を `config/models.yaml` から読み込んで適用します。
 - **その他**: `case_law/` は判例データのプレースホルダ、`logs/` はローカル実行時のログ出力先です。
 
 ## リポジトリ構成
@@ -17,7 +17,7 @@ ai-role-education/
 ├─ roles/              # 各ロールのプロンプト (v3 世代の md ファイル)
 ├─ flow/               # education_flow_v1/v2 の説明と YAML 定義
 ├─ concepts/           # コンセプトごとの versioned YAML（concept / mext_review / license）
-├─ config/             # クレジット・天候設定
+├─ config/             # クレジット・天候設定、ロールごとのモデル設定
 ├─ scripts/            # 簡易実行スクリプト（LLM クライアント差し替え可能）
 ├─ environment.py      # 天候クラスと参加可否判定
 ├─ judge_system.py     # 再教育キューのスタブ実装
@@ -40,6 +40,16 @@ ai-role-education/
 ```bash
 python scripts/run_flow.py --concept-id docdd --flow flow/education_flow_v2.yaml
 ```
+
+### ロールごとのモデル設定と切り替え
+- `config/models.yaml` に、デフォルトおよびロール（teacher / trainee / contract / mext など）ごとの `provider` / `model` / `temperature` を記述します。
+- 実行時にはロール名に対応する設定を優先し、見つからない場合は `default` セクションを使用します。
+- `--debug` を付けると、各ステージ開始前に解決されたロール設定が標準出力に表示されます（例: `[DEBUG] role=teacher provider=openai model=gpt-4o temperature=0.2 client=DummyEchoClient`）。
+- `--llm-provider` フラグで利用するクライアント実装を選択できます。`dummy` はエコー動作、`openai` は OpenAI 用スケルトン（API 呼び出しは未実装）です。設定ファイルの `provider` は将来複数ベンダーを使い分けるためのメタデータとして保持されます。
+
+### 依存関係
+- Python 3.11 以上を想定しています。
+- 実行には PyYAML が必要です。環境に応じて `pip install pyyaml` で追加してください（ネットワーク制約がある環境では事前にホイールを用意するなどの対処が必要です）。
 
 ## 設定・ヘルパーの利用イメージ
 - `config/credit_policy.yaml`: 初期クレジット、進化コスト、成功報酬やペナルティ係数を管理するためのサンプルデータ。
