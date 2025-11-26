@@ -1,76 +1,265 @@
-# ai-role-education
+# AI Nation OS: Role-Based Education System  
+（ロール教育OS / AIロール会社）
 
-AI ロール教育のためのプロンプト、フロー定義、サンプルデータをまとめたリポジトリです。LLM 呼び出しや外部サービス連携は含まれていないため、あくまで資料・テンプレート集としてそのまま利用できます。
+> **System Philosophy**  
+> Human is the Captain (Founder). AI is the Crew.  
+>  
+> このリポジトリは、複数の AI エージェントを「会社組織」のように動かすための **OS（オペレーティングシステム）** です。  
+> ここで決められた憲法・役割・ワークフローに従って、LLM と Antigravity（IDE＋MCP）が協調して動きます。
 
-## 含まれているもの（現状）
-- **ロールプロンプト**: Router / Planner(PM) / Contract & Ethics / Teacher / Trainee / MEXT / License / Judge などの v3 世代ドキュメントが `roles/` 配下にあります。
-- **教育フロー定義**: 直列の v1 と、Router を入り口にした v2 をそれぞれ Markdown と YAML で収録しています (`flow/education_flow_v1.*`, `flow/education_flow_v2.*`)。
-- **コンセプトデータ**: `concepts/<concept_id>/` に concept・mext_review・license の各 YAML をバージョン付きで保存しています（api_dd / audit_dd / ddd / docdd / infra_dd / metricdd / opsdd / riskdd / tdd / uxdd）。
-- **設定ファイル**: クレジット配分 (`config/credit_policy.yaml`)、天候パターン (`config/weather_config.yaml`)、ロールごとのモデル設定 (`config/models.yaml`) を用意しています。
-- **簡易ヘルパー**: 天候の可否判定クラス（`environment.py`）、再教育キューのスタブ（`judge_system.py`）、ロールバージョン管理のパス生成ヘルパー（`role_paths.py`）。
-- **動作サンプルスクリプト**: `scripts/run_flow.py` でフローとコンセプトの読み書きを試せます。LLM 呼び出しは差し替え可能なクライアント層を通じて行い、デフォルトでは Dummy クライアントがプロンプトをエコーします。ロールごとに異なるモデル設定を `config/models.yaml` から読み込んで適用します。
-- **その他**: `case_law/` は判例データのプレースホルダ、`logs/` はローカル実行時のログ出力先です。
+---
 
-## リポジトリ構成
-```
-ai-role-education/
-├─ roles/              # 各ロールのプロンプト (v3 世代の md ファイル)
-├─ flow/               # education_flow_v1/v2 の説明と YAML 定義
-├─ concepts/           # コンセプトごとの versioned YAML（concept / mext_review / license）
-├─ config/             # クレジット・天候設定、ロールごとのモデル設定
-├─ scripts/            # 簡易実行スクリプト（LLM クライアント差し替え可能）
-├─ environment.py      # 天候クラスと参加可否判定
-├─ judge_system.py     # 再教育キューのスタブ実装
-├─ role_paths.py       # ロールのバージョンディレクトリ補助
-├─ logs/               # ローカル実行ログ（存在しない場合は自動生成）
-└─ case_law/           # 判例データの空ディレクトリ
-```
+## 1. Project Identity
 
-## フロー定義の概要
-- **education_flow_v1**: teacher → mext → license の直列フロー。`flow/education_flow_v1.md` と `flow/education_flow_v1.yaml` に詳細があります。
-- **education_flow_v2**: Router を入口とし、Planner/Contract & Ethics/Teacher/Trainee を経由する発展版。`flow/education_flow_v2.md` と `flow/education_flow_v2.yaml` にステージと入出力の対応をまとめています。
+This project is not just a codebase;  
+it is a simulated organization where AI agents act according to specific roles to support the **Founder (Human)**.
 
-## サンプルスクリプトの使い方
-`python scripts/run_flow.py --concept-id <id>` で指定コンセプトの最新バージョンを読み、次バージョンの concept/mext_review/license を作成して `logs/education_sessions.md` に履歴を追記します。
+### Core Concepts
 
-- LLM クライアントは `llm_client.py` の `LLMClient` プロトコル経由で呼び出され、デフォルトでは `DummyEchoClient` がシステム・ユーザープロンプトを整形して返します。
-- 実運用で OpenAI/Gemini などを利用する場合は `llm_client.py` のスケルトン実装を差し替え、API キーは環境変数（例: `OPENAI_API_KEY`）から参照してください。
-- 事前に `concepts/<id>/concept_v*.yaml` が存在しない場合は失敗します。
+- **OS Layer (Governance)**  
+  The brain. Decides *what* to do and *how* to organize.  
+  Implemented mainly in Python (`ai-role-education`) and prompt files.
 
-```bash
-python scripts/run_flow.py --concept-id docdd --flow flow/education_flow_v2.yaml
-```
+- **Antigravity Layer (Execution)**  
+  The hands. Edits code, runs tests, talks to DBs, deploys via MCP (Netlify, Supabase, Stripe, etc.).
 
-### ロールごとのモデル設定と切り替え
-- `config/models.yaml` に、デフォルトおよびロール（teacher / trainee / contract / mext など）ごとの `provider` / `model` / `temperature` を記述します。
-- 実行時にはロール名に対応する設定を優先し、見つからない場合は `default` セクションを使用します。
-- `--debug` を付けると、各ステージ開始前に解決されたロール設定が標準出力に表示されます（例: `[DEBUG] role=teacher provider=openai model=gpt-4o temperature=0.2 client=DummyEchoClient`）。
-- `--llm-provider` フラグで利用するクライアント実装を選択できます。`dummy` はエコー動作、`openai` は OpenAI 用スケルトン（API 呼び出しは未実装）です。設定ファイルの `provider` は将来複数ベンダーを使い分けるためのメタデータとして保持されます。
+- **Relationship**  
+  The OS instructs; Antigravity executes.  
+  The OS controls Antigravity’s **Mode / Policy** to keep a balance between speed and safety.
 
-### 依存関係
-- Python 3.11 以上を想定しています。
-- 実行には PyYAML が必要です。環境に応じて `pip install pyyaml` で追加してください（ネットワーク制約がある環境では事前にホイールを用意するなどの対処が必要です）。
+---
 
-## 設定・ヘルパーの利用イメージ
-- `config/credit_policy.yaml`: 初期クレジット、進化コスト、成功報酬やペナルティ係数を管理するためのサンプルデータ。
-- `config/weather_config.yaml` + `environment.py`: 天候ごとに強度・混沌度・報酬補正と参加必要クレジットを持ち、`WeatherSystem.can_join()` で参加可否を判定します。
-- `judge_system.py`: 再教育キューの同時処理上限やタイムアウト（48 時間）をスタブ実装しています。
-- `role_paths.py`: `roles/active` と `roles/archive` をまたぐロールバージョンディレクトリの生成に使うユーティリティです。
+## 2. Organization Architecture (Roles)
 
-## 現時点の前提と制約
-- このリポジトリはドキュメントとテンプレート集であり、エージェント実行環境や API は含まれていません。
-- `case_law/` や `logs/` はプレースホルダ扱いで、必要に応じてローカルで追加します。
-- ライセンス表記は特に設けていません（プロンプトや YAML を自分の実験用途で自由に拡張する想定）。
+The organization is divided into three layers.
 
-## はじめてこの GitHub を開いた AI へのガイド
-新しいチャットでこのリポジトリの URL を共有された AI が即座に理解できるよう、次のポイントを押さえてください。
+### 🏛 Upper Layer — Decision & Direction
 
-1. **このリポジトリの目的**: AI ロール教育のためのプロンプトとフロー定義をまとめた資料集です。LLM 呼び出しや外部 API は含まれず、テンプレートを読み書きするだけで使えます。
-2. **主要フォルダの見方**:
-   - `roles/`: Router・Teacher などロールごとのプロンプト集（最新版は `roles/active/`）。
-   - `flow/`: education_flow_v1/v2 のフロー説明と YAML 定義。
-   - `concepts/`: コンセプト別の versioned YAML（concept / mext_review / license）。
-   - `config/`: モデル設定やクレジット・天候設定。
-3. **動かし方の最小例**: `python scripts/run_flow.py --concept-id <id>` を実行すると、指定コンセプトの次バージョンを生成して `logs/education_sessions.md` に記録します（依存は PyYAML のみ想定）。
-4. **カスタマイズの入口**: 実際の LLM API を使うときは `llm_client.py` を実装し、`config/models.yaml` でロールごとのモデル設定を調整します。
-5. **その他のヒント**: `environment.py` は天候と参加可否の判定、`judge_system.py` は再教育キューのスタブ、`role_paths.py` はロールバージョンのパス生成を担います。迷ったら README 先頭の「含まれているもの」と「リポジトリ構成」を参照してください。
+- **🧠 Founder (User)**  
+  - Issues requests, sets policies, and holds final veto power.  
+  - Approves or rejects: contract termination, blacklist, critical production changes.
+
+- **🛰 Router (Commander / Orchestrator)**  
+  - Entry point of the OS.  
+  - Analyzes the request, detects domain & chaos level.  
+  - Forms a project company (team) and assigns **Hats (Domain Modules)** to roles.  
+  - Emits `task_spec` for implementation (what to build, constraints, risk notes).
+
+---
+
+### 🏢 Middle Layer — Management & Education
+
+- **🧾 Client Proxy**  
+  - Simulated client persona (sometimes ambiguous or unreasonable on purpose).  
+  - Provides realistic, messy requirements and last-minute changes.
+
+- **📐 Planner / PM**  
+  - Structures requirements into steps (Scope / Milestones / Priority).  
+  - Owns schedule and **Cost Hat** (budget / infra cost estimation).
+
+- **🧑‍🏫 Teacher**  
+  - Designs the learning & execution path for Trainees.  
+  - Uses primitives like `Structure`, `Plan`, `Verify`.  
+  - Reviews output and corrects **behavior / process**, not just code diffs.  
+  - Often carries **Web Security / Architecture Hats**.
+
+- **⚖ Contract & Ethics**  
+  - Safety net and escalation role.  
+  - Calculates **Unreasonableness Score (0–100)** based on:  
+    - Concept flip, impossible deadlines, contradicting instructions, etc.  
+  - Handles legal & compliance checks (Legal Hat).  
+  - Decides when to:  
+    - ask for renegotiation  
+    - pause the work  
+    - propose contract termination (always needs Founder’s final approval).
+
+- **🏫 MEXT (Education Auditor)**  
+  - Evaluates the **education process itself**, not only the result.  
+  - Asks: “Is Teacher guiding Trainee in a way that scales?”  
+  - Logs patterns like “this teaching style leads to fewer bugs”.
+
+- **🎓 License / HR**  
+  - Manages skill accreditation and permission levels.  
+  - Decides if a Trainee can handle a task solo (LP only, API only, etc.)  
+  - Updates “allowed scope” after each project.
+
+---
+
+### 🏗 Lower Layer — Execution
+
+- **👷 Trainee (Worker)**  
+  - Performs real work using primitives:  
+    - `Collect` (research),  
+    - `Structure` (outlines, schemas),  
+    - `Generate` (code / docs / designs),  
+    - plus light `Verify`.  
+  - Main interface to **Antigravity** for:  
+    - editing code  
+    - running tests  
+    - calling MCP tools (DB, deploy, payments, etc.).  
+  - Must not:  
+    - change scope on their own  
+    - bypass Teacher / PM / Contract restrictions.
+
+---
+
+## 3. Workflow & Governance
+
+### 3.1 High-Level Flow
+
+1. **Request Ingestion**  
+   Founder sends a request (e.g. “Build a hair salon reservation site in 2 weeks.”).
+
+2. **Routing (Router)**  
+   - Analyze domain & chaos level.  
+   - Form team (PM / Teacher / Trainee / Contract / MEXT / License).  
+   - Attach Hats (Cost, WebSec, MCP, Backend…).  
+   - Emit `task_spec` (high-level spec & constraints).
+
+3. **Planning (PM)**  
+   - Break down `task_spec` into:  
+     - phases (e.g. Step1: LP + dummy flow, Step2: full booking, Step3: admin UI…),  
+     - concrete tasks.
+
+4. **Execution & Education (Teacher + Trainee)**  
+   - Teacher instructs Trainee:  
+     - first `Collect`, then `Structure`, then `Generate`.  
+   - Trainee uses Antigravity to implement.
+
+5. **Review & Evaluation (MEXT / License / Founder)**  
+   - MEXT: evaluates process & quality.  
+   - License: updates Trainee’s permission scope.  
+   - Founder: approves major decisions (launch, termination, blacklist, etc.).
+
+6. **Learning Log (Router / Auditor)**  
+   - Each project produces:  
+     - `Learned`: what worked  
+     - `Deprecated`: what we won’t do again  
+     - `Next`: how to improve in the next similar project  
+   - These are fed back into prompts & flow templates (`flow_v2`).
+
+---
+
+### 3.2 Safety Protocols (Unreasonableness Score)
+
+Contract & Ethics maintains an **Unreasonableness Score (0–100)**:
+
+- +30: full concept reversal (e.g. “cancel LP, build a membership app instead”)  
+- +20: impossible deadline (e.g. “do it in half the time with no extra cost”)  
+- +10: contradicting instructions / hard reversals  
+- +5: frequent scope changes beyond 3rd time
+
+**Levels:**
+
+- **Lv.1 (< 40)** — Normal  
+- **Lv.2 (40–70)** — Warning  
+  - PM must renegotiate conditions or clarify scope.  
+- **Lv.3 (> 70)** — Emergency Stop  
+  - Trainee’s work is paused.  
+  - Contract proposes schedule / budget renegotiation.  
+- **Lv.4 (> 90)** — Termination Recommended  
+  - Contract proposes contract termination & blacklist.  
+  - Final decision is always made by the Founder.
+
+---
+
+## 4. Antigravity Mapping (Execution Policy)
+
+Antigravity (IDE + MCP) has several modes and policies.  
+This OS decides *which mode to use for which task*. Antigravity only executes.
+
+### 4.1 Modes
+
+| Mode                  | Use Case                                   |
+|-----------------------|--------------------------------------------|
+| **Agent-driven**      | Sandbox, throwaway prototypes, experiments |
+| **Agent-assisted**    | **DEFAULT**. Normal feature dev & refactor |
+| **Review-driven**     | Production, payments, DB migration, PII    |
+
+### 4.2 Terminal / Review Policies
+
+| Mode               | Terminal Policy           | Review Policy                           |
+|--------------------|---------------------------|-----------------------------------------|
+| Agent-driven       | **Turbo** (high autonomy) | **Agent Proceed** (no human gate)       |
+| Agent-assisted     | **Auto** (safe subset)    | **Agent Decides** (mid-risk, limited)   |
+| Review-driven      | **Off** (human runs)      | **Request Review** (human approval)     |
+
+### 4.3 Rules of Engagement
+
+- **Router & Contract** decide the Mode and policies per task.  
+- **Antigravity** acts as the “Settings Screen” that enforces these decisions.  
+- **Trainee must NOT**:  
+  - switch Mode  
+  - escalate Terminal or Review policy  
+  without explicit approval from Contract (and sometimes Founder).
+
+---
+
+## 5. Multi-LLM & Model Settings
+
+The OS is designed to support **different models per role**.
+
+- Config file example: `config/models.yaml`  
+
+  ```yaml
+  default:
+    provider: openai
+    model: gpt-4o-mini
+    temperature: 0.3
+
+  teacher:
+    provider: openai
+    model: gpt-4o
+    temperature: 0.2
+
+  trainee:
+    provider: openai
+    model: gpt-4o-mini
+    temperature: 0.4
+
+  contract:
+    provider: openai
+    model: gpt-4o
+    temperature: 0.1
+
+  mext:
+    provider: openai
+    model: gpt-4o
+    temperature: 0.2
+  ```
+
+- Idea:
+  - Cheap / fast models for Trainee (drafting & brute work).  
+  - Stronger models for Teacher / MEXT / Contract (review & judgment).  
+  - In the future, different providers (Gemini / Claude / etc.) can be plugged in per role.
+
+---
+
+## 6. Directory Structure (Expected)
+
+This is the intended directory layout (may evolve):
+
+- `/system_prompts`
+  - Role definitions: router.md, pm.md, teacher.md, trainee.md, contract.md, mext.md, license.md, etc.  
+  - Each prompt may reference relevant sections of this README.
+- `/flows`
+  - flow_v1: simple linear flow (Teacher → MEXT → License).  
+  - flow_v2: Router-driven company flow with roles and Hats.
+- `/config`
+  - models.yaml: per-role LLM configuration.  
+  - future: antigravity_modes.yaml, etc.
+- `/learning_logs`
+  - Project-level Learning Logs written by Router / MEXT / Teacher.
+- `/tasks`
+  - task_spec and implementation reports for each project.
+- `/src`
+  - Actual product code (what Trainee + Antigravity work on).
+- `/docs`
+  - Human-readable documentation created during projects.
+
+---
+
+Updated: 2025-11-26 by Founder & AI Nation OS
+
+This README acts as the constitution of the AI Nation OS.  
+All role prompts and flows should be consistent with this document.
