@@ -57,12 +57,13 @@ def call_teacher_agent(
     *,
     client: LLMClient | None,
     output_path: pathlib.Path,
+    role_prompt_path: pathlib.Path | None = None,
     extra_context: str = "",
     debug: bool = False,
 ) -> str:
     """Use teacher_agent prompt to propose the next concept version."""
 
-    system_prompt = load_role_prompt("teacher")
+    system_prompt = load_role_prompt("teacher", explicit_path=role_prompt_path)
     user_prompt = "\n\n".join(
         [
             f"# Concept ID: {concept_id}",
@@ -92,12 +93,13 @@ def call_mext_agent(
     *,
     client: LLMClient | None,
     output_path: pathlib.Path,
+    role_prompt_path: pathlib.Path | None = None,
     extra_context: str = "",
     debug: bool = False,
 ) -> str:
     """Use mext_agent prompt to produce a review YAML."""
 
-    system_prompt = load_role_prompt("mext")
+    system_prompt = load_role_prompt("mext", explicit_path=role_prompt_path)
     user_prompt = "\n\n".join(
         [
             f"# Concept ID: {concept_id}",
@@ -124,12 +126,13 @@ def call_license_agent(
     *,
     client: LLMClient | None,
     output_path: pathlib.Path,
+    role_prompt_path: pathlib.Path | None = None,
     extra_context: str = "",
     debug: bool = False,
 ) -> str:
     """Use license_agent prompt to produce a license YAML."""
 
-    system_prompt = load_role_prompt("license")
+    system_prompt = load_role_prompt("license", explicit_path=role_prompt_path)
     user_prompt = "\n\n".join(
         [
             f"# Concept ID: {concept_id}",
@@ -390,6 +393,7 @@ def main() -> None:
                 current_concept_yaml,
                 client=client,
                 output_path=concept_output_path,
+                role_prompt_path=pathlib.Path(role_prompt_path) if role_prompt_path else None,
                 extra_context=extra_context,
                 debug=args.debug,
             )
@@ -420,6 +424,7 @@ def main() -> None:
                 current_concept_yaml,
                 client=client,
                 output_path=mext_output_path,
+                role_prompt_path=pathlib.Path(role_prompt_path) if role_prompt_path else None,
                 extra_context=extra_context,
                 debug=args.debug,
             )
@@ -445,6 +450,7 @@ def main() -> None:
                 mext_review_source,
                 client=client,
                 output_path=license_output_path,
+                role_prompt_path=pathlib.Path(role_prompt_path) if role_prompt_path else None,
                 extra_context=extra_context,
                 debug=args.debug,
             )
