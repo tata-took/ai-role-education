@@ -256,6 +256,7 @@ This is the intended directory layout (may evolve):
   - Actual product code (what Trainee + Antigravity work on).
 - `/docs`
   - Human-readable documentation created during projects.
+  - LLMごとの特徴とロールへの割り当て検討については、[`docs/llm-selection-ja.md`](docs/llm-selection-ja.md) を参照してください。
 
 ---
 
