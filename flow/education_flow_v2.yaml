@@ -4,51 +4,40 @@ concepts_root: "concepts"
 loop_rules:
   max_revision_loops: 4
   approve_threshold: 12
-  max_loops_behavior: "4ループ超過時は judge_agent と Contract & Ethics にエスカレーションし、Founder の判断を待つ"
+  max_loops_behavior: "4ループ超過時は judge_agent と Contract にエスカレーションし、Founder の判断を待つ"
   irrationality_levels:
     level_1: "0-24: 通常進行。Teacher/Trainee の作業を継続"
-    level_2: "25-49: 交渉ログを残しつつ継続。Planner が緩和策を計画に追加"
-    level_3: "50-74: Trainee/Teacher は停止。Contract & Ethics が再交渉プランを提示し、合意後に再開"
+    level_2: "25-49: 交渉ログを残しつつ継続。PM が緩和策を計画に追加"
+    level_3: "50-74: Trainee/Teacher は停止。Contract が再交渉プランを提示し、合意後に再開"
     level_4: "75-100: 契約解消または終了提案を準備し、Founder の承認を必須とする"
 review_output: "{concepts_root}/{concept_id}/mext_review_v{n}.yaml"
 stages:
   - id: router
     description: "案件の入口。ロール構成とドメインHatを選定し、実行計画を配布する"
-    role_prompt: "roles/router_agent_prompt_v3.md"
+    role_prompt: "system_prompts/router.md"
     inputs:
       - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
       - "personas/schema.yaml"
     outputs:
       - "{concepts_root}/{concept_id}/routing_plan_v{n+1}.yaml"
-    handoff: "planner"
+    handoff: "pm"
 
-  - id: planner
+  - id: pm
     description: "スコープ・コスト・スケジュールを具体化し、完了条件を定義する"
-    role_prompt: "roles/planner_pm_agent_prompt_v3.md"
+    role_prompt: "system_prompts/pm.md"
     inputs:
-      - "{concepts_root}/{concept_id}/routing_plan_v{n}.yaml"
+      - "{concepts_root}/{concept_id}/routing_plan_v{n+1}.yaml"
       - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
     outputs:
       - "{concepts_root}/{concept_id}/project_plan_v{n+1}.yaml"
-    handoff: "contract_ethics"
-
-  - id: contract_ethics
-    description: "理不尽スコアを計測し、契約・倫理ガードレールを設定する"
-    role_prompt: "roles/contract_ethics_agent_prompt_v3.md"
-    inputs:
-      - "{concepts_root}/{concept_id}/project_plan_v{n}.yaml"
-      - "config/credit_policy.yaml"
-    outputs:
-      - "{concepts_root}/{concept_id}/contract_ethics_report_v{n+1}.yaml"
     handoff: "teacher"
 
   - id: teacher
     description: "教材や指示を作成し、Trainee へハンドオフする"
-    role_prompt: "roles/teacher_agent_prompt_v3.md"
+    role_prompt: "system_prompts/teacher.md"
     inputs:
       - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
-      - "{concepts_root}/{concept_id}/project_plan_v{n}.yaml"
-      - "{concepts_root}/{concept_id}/contract_ethics_report_v{n}.yaml"
+      - "{concepts_root}/{concept_id}/project_plan_v{n+1}.yaml"
     outputs:
       - "{concepts_root}/{concept_id}/concept_v{n+1}.yaml"
       - "{concepts_root}/{concept_id}/teacher_notes_v{n+1}.md"
@@ -56,40 +45,65 @@ stages:
 
   - id: trainee
     description: "Teacher の指示をもとに成果物を作り、一次検証を実施する"
-    role_prompt: "roles/trainee_agent_prompt_v3.md"
+    role_prompt: "system_prompts/trainee.md"
     inputs:
       - "{concepts_root}/{concept_id}/teacher_notes_v{n}.md"
       - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
     outputs:
       - "{concepts_root}/{concept_id}/trainee_output_v{n}.md"
       - "{concepts_root}/{concept_id}/self_checklist_v{n}.yaml"
+    handoff: "contract"
+
+  - id: contract
+    description: "理不尽スコアを計測し、契約・倫理ガードレールを設定する"
+    role_prompt: "system_prompts/contract.md"
+    inputs:
+      - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
+      - "{concepts_root}/{concept_id}/project_plan_v{n}.yaml"
+      - "{concepts_root}/{concept_id}/trainee_output_v{n}.md"
+      - "{concepts_root}/{concept_id}/self_checklist_v{n}.yaml"
+      - "config/credit_policy.yaml"
+    outputs:
+      - "{concepts_root}/{concept_id}/contract_ethics_report_v{n}.yaml"
     handoff: "mext"
 
   - id: mext
     description: "概念と成果物を8項目で審査し、承認または差し戻しを行う"
-    role_prompt: "roles/mext_agent_prompt.md"
+    role_prompt: "system_prompts/mext.md"
     inputs:
       - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
       - "{concepts_root}/{concept_id}/trainee_output_v{n}.md"
       - "{concepts_root}/{concept_id}/self_checklist_v{n}.yaml"
+      - "{concepts_root}/{concept_id}/contract_ethics_report_v{n}.yaml"
     outputs:
       - "{concepts_root}/{concept_id}/mext_review_v{n}.yaml"
     handoff: "license"
 
   - id: license
     description: "承認済み Concept と契約条件を踏まえ、免許定義を作成する"
-    role_prompt: "roles/license_agent_prompt.md"
+    role_prompt: "system_prompts/license.md"
     inputs:
       - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
       - "{concepts_root}/{concept_id}/mext_review_v{n}.yaml"
       - "{concepts_root}/{concept_id}/contract_ethics_report_v{n}.yaml"
     outputs:
       - "{concepts_root}/{concept_id}/license_v{n}.yaml"
+    handoff: "router_summary"
+
+  - id: router_summary
+    description: "Router が学習ログとして成果物と審査結果をまとめる"
+    role_prompt: "system_prompts/router.md"
+    inputs:
+      - "{concepts_root}/{concept_id}/concept_v{n}.yaml"
+      - "{concepts_root}/{concept_id}/mext_review_v{n}.yaml"
+      - "{concepts_root}/{concept_id}/license_v{n}.yaml"
+    outputs:
+      - "learning_logs/{concept_id}/router_log_v{n}.md"
     handoff: null
 revision_policy:
   loop_condition: |
-    - mext stage decision が approved になるまで teacher↔trainee↔mext を繰り返す
-    - 理不尽スコアが Lv.3 以上になった場合は Contract & Ethics の再交渉結果を待ってから再開
+    - mext stage decision が approved になるまで teacher↔trainee→contract→mext を繰り返す
+    - 理不尽スコアが Lv.3 以上になった場合は Contract の再交渉結果を待ってから再開
 versioning_rules:
   - "Concept, Review, License, Plan は同じ n を共有し、ループのたびに n をインクリメントする"
   - "routing_plan / project_plan / contract_ethics_report / teacher_notes / trainee_output は同じループ番号 n を用いる"
