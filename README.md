@@ -61,3 +61,16 @@ python scripts/run_flow.py --concept-id docdd --flow flow/education_flow_v2.yaml
 - このリポジトリはドキュメントとテンプレート集であり、エージェント実行環境や API は含まれていません。
 - `case_law/` や `logs/` はプレースホルダ扱いで、必要に応じてローカルで追加します。
 - ライセンス表記は特に設けていません（プロンプトや YAML を自分の実験用途で自由に拡張する想定）。
+
+## はじめてこの GitHub を開いた AI へのガイド
+新しいチャットでこのリポジトリの URL を共有された AI が即座に理解できるよう、次のポイントを押さえてください。
+
+1. **このリポジトリの目的**: AI ロール教育のためのプロンプトとフロー定義をまとめた資料集です。LLM 呼び出しや外部 API は含まれず、テンプレートを読み書きするだけで使えます。
+2. **主要フォルダの見方**:
+   - `roles/`: Router・Teacher などロールごとのプロンプト集（最新版は `roles/active/`）。
+   - `flow/`: education_flow_v1/v2 のフロー説明と YAML 定義。
+   - `concepts/`: コンセプト別の versioned YAML（concept / mext_review / license）。
+   - `config/`: モデル設定やクレジット・天候設定。
+3. **動かし方の最小例**: `python scripts/run_flow.py --concept-id <id>` を実行すると、指定コンセプトの次バージョンを生成して `logs/education_sessions.md` に記録します（依存は PyYAML のみ想定）。
+4. **カスタマイズの入口**: 実際の LLM API を使うときは `llm_client.py` を実装し、`config/models.yaml` でロールごとのモデル設定を調整します。
+5. **その他のヒント**: `environment.py` は天候と参加可否の判定、`judge_system.py` は再教育キューのスタブ、`role_paths.py` はロールバージョンのパス生成を担います。迷ったら README 先頭の「含まれているもの」と「リポジトリ構成」を参照してください。
