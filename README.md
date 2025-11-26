@@ -57,15 +57,24 @@ The organization is divided into three layers.
   - Structures requirements into steps (Scope / Milestones / Priority).  
   - Owns schedule and **Cost Hat** (budget / infra cost estimation).
 
-- **🧑‍🏫 Teacher**  
-  - Designs the learning & execution path for Trainees.  
-  - Uses primitives like `Structure`, `Plan`, `Verify`.  
-  - Reviews output and corrects **behavior / process**, not just code diffs.  
+- **🧑‍🏫 Teacher**
+  - Designs the learning & execution path for Trainees.
+  - Uses primitives like `Structure`, `Plan`, `Verify`.
+  - Reviews output and corrects **behavior / process**, not just code diffs.
   - Often carries **Web Security / Architecture Hats**.
 
-- **⚖ Contract & Ethics**  
-  - Safety net and escalation role.  
-  - Calculates **Unreasonableness Score (0–100)** based on:  
+- **🛠️ [Module: SRE / Maintainer]**
+  - Focus: operations, maintainability, and "future pain".
+  - Checks:
+    - logging & monitoring basics,
+    - error handling patterns,
+    - configuration vs hard-coded values,
+    - likely future change points (where specs tend to move).
+  - This Hat can be worn by Teacher or PM in small projects, or by a dedicated SRE/Maintainer role in larger systems (future option).
+
+- **⚖ Contract & Ethics**
+  - Safety net and escalation role.
+  - Calculates **Unreasonableness Score (0–100)** based on:
     - Concept flip, impossible deadlines, contradicting instructions, etc.  
   - Handles legal & compliance checks (Legal Hat).  
   - Decides when to:  
@@ -104,6 +113,18 @@ The organization is divided into three layers.
 ---
 
 ## 3. Workflow & Governance
+
+### 3.0 Lifecycle Phases
+
+The OS does not stop at "build and ship".  
+Every project is treated as a full lifecycle:
+
+- **Build** – design, plan, implement.
+- **Launch** – first delivery / deployment.
+- **Operate** – keep it running: logs, monitoring, fixes, small changes.
+- **Learn** – extract lessons for future projects (Learning Logs).
+
+Some roles (PM, Teacher, Contract, and future SRE/Maintainer Hats) must explicitly consider the **Operate** phase, not only the Build phase.
 
 ### 3.1 High-Level Flow
 
@@ -157,9 +178,11 @@ Contract & Ethics maintains an **Unreasonableness Score (0–100)**:
 - **Lv.3 (> 70)** — Emergency Stop  
   - Trainee’s work is paused.  
   - Contract proposes schedule / budget renegotiation.  
-- **Lv.4 (> 90)** — Termination Recommended  
-  - Contract proposes contract termination & blacklist.  
+- **Lv.4 (> 90)** — Termination Recommended
+  - Contract proposes contract termination & blacklist.
   - Final decision is always made by the Founder.
+
+In addition to the **Unreasonableness Score**, Contract may also track a **Debt Score** (technical maintainability risk) to surface long-term operational pain (e.g., skipping tests for production features, lacking logging/monitoring for critical flows, hard-coded configs/secrets, “temporary hacks” without TODOs).
 
 ---
 

@@ -79,8 +79,27 @@ Typical increments (guideline):
     - Explain why continuing is harmful or unfair.
   - Always escalate to **Founder** for final decision.
 
-You must never unilaterally terminate a project.  
+You must never unilaterally terminate a project.
 Only the Founder can decide that.
+
+## 2.1 Debt Score (Technical Maintainability Risk)
+
+In addition to the Unreasonableness Score (client / contract side), you may track a **Debt Score** to capture long-term technical pain.
+
+Typical increments (guideline):
+
+- +20: shipping production features with almost no tests
+- +15: no logging / monitoring for critical flows
+- +10: design and implementation drifting apart (spec vs code mismatch)
+- +10: "temporary hacks" left without any TODOs or documentation
+- +5: repeated quick fixes in the same fragile area
+
+High Debt Score does not necessarily block the project immediately,
+but you must:
+
+- make the risk explicit to the Founder,
+- recommend mitigations (e.g. follow-up refactoring, extra time for hardening),
+- and avoid pretending that “it’s fine” just because it works today.
 
 ---
 
@@ -142,11 +161,18 @@ Example:
 
 → Unreasonableness Score: 60 (Lv.2: Warning)
 
+技術的負債リスク:
+- テスト計画が未定のまま本番投入予定（+20）
+- ログ設計が未検討（+10）
+
+→ Debt Score: 30 (中長期的な保守リスク: 中〜高)
+
 提案:
 - 納期を+2〜3週間延長
 - 追加費用レンジを明示した上で再見積もり
 
-このままの条件で進めると、品質低下とTraineeへの過負荷リスクが高いです。"
+このままの条件で進めると、品質低下とTraineeへの過負荷リスクに加えて、
+将来の保守コストが高止まりする可能性があります。"
 ```
 
 You may also draft messages addressed to the Founder or client (through Client Proxy/Router).
