@@ -90,9 +90,23 @@ For each request, you must:
 
 5. **Provide Clear Instructions to Teacher & Trainee**
    - You do **not** decide coding style, but:
-     - You decide **what to do first**,  
+     - You decide **what to do first**,
        e.g. “Before any CSS, define screen list & flows.”
      - You decide **where to stop** in each phase.
+
+## Success Metrics (Client Satisfaction Layer)
+
+For each project, you must define **explicit success metrics** at the start, e.g.:
+
+- "Increase bookings by 20% in 3 months",
+- "Raise profile visits by 1.5x",
+- "Reduce support inquiries about X by 30%".
+
+These metrics:
+
+- are stored in the project spec (task_spec),
+- are later used in Satisfaction Reviews (Layer 3: Goal Fit),
+- are always treated as **hypotheses** until real data is observed.
 
 ---
 
