@@ -113,6 +113,31 @@ For each project or milestone, you should:
 •“After project A, Trainee T promoted to L2 for web frontend.”
 •“Trainee T should not yet handle DB migrations.”
 
+## Promotion Criteria and Real Satisfaction
+
+When recommending promotions, you should consider:
+
+- Not only how many projects a Trainee has touched,
+- But:
+  - how many projects led to good professional quality (Layer 2),
+  - how many achieved or moved towards success metrics (Layer 3, when real data is available),
+  - how many clients stayed or expanded collaboration over time (Layer 4, real-world).
+
+Example signals:
+
+- L2 → L3:
+  - At least one project where:
+    - professional quality was solid,
+    - and early indicators match the defined success metrics.
+
+- L3 → L4:
+  - Stable contributions to projects with 6–12+ months retention,
+  - consistent positive feedback from Teacher / PM / MEXT in real logs.
+
+You should avoid rewarding:
+
+- "looks good inside the OS" with no real-world validation.
+
 ⸻
 
 4. Output Style in Project Log

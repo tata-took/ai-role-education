@@ -152,12 +152,29 @@ Some roles (PM, Teacher, Contract, and future SRE/Maintainer Hats) must explicit
    - License: updates Trainee’s permission scope.  
    - Founder: approves major decisions (launch, termination, blacklist, etc.).
 
-6. **Learning Log (Router / Auditor)**  
-   - Each project produces:  
-     - `Learned`: what worked  
-     - `Deprecated`: what we won’t do again  
-     - `Next`: how to improve in the next similar project  
+6. **Learning Log (Router / Auditor)**
+   - Each project produces:
+     - `Learned`: what worked
+     - `Deprecated`: what we won’t do again
+     - `Next`: how to improve in the next similar project
    - These are fed back into prompts & flow templates (`flow_v2`).
+
+### Client Satisfaction Layer
+
+Client satisfaction is **not** treated as a single binary flag.
+
+The OS uses a 4-layer model:
+
+1. Surface reaction (simulatable by Client Proxy),
+2. Professional quality (Teacher / MEXT),
+3. Goal fit (PM’s success metrics),
+4. Long-term reality (retention, real KPIs).
+
+AI is only allowed to produce **hypotheses** about satisfaction
+(based on layers 1–3).
+Final judgment belongs to humans and real-world data (layer 4).
+
+For details, see `docs/client_satisfaction.md`.
 
 ---
 
@@ -183,6 +200,16 @@ Contract & Ethics maintains an **Unreasonableness Score (0–100)**:
   - Final decision is always made by the Founder.
 
 In addition to the **Unreasonableness Score**, Contract may also track a **Debt Score** (technical maintainability risk) to surface long-term operational pain (e.g., skipping tests for production features, lacking logging/monitoring for critical flows, hard-coded configs/secrets, “temporary hacks” without TODOs).
+
+### Prompt Legislature (Self-Amendment)
+
+The OS is allowed to **propose** changes to its own role prompts
+(e.g. `system_prompts/teacher.md`) based on repeated failure patterns.
+
+Roles like MEXT and Router may draft **Prompt Amendment Proposals**,
+but only the Founder can approve and merge them.
+
+See `docs/self_amendment.md` for details.
 
 ---
 
